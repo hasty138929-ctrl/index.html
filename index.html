@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>هوش تغذیه + آموزش | NutriAI Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Vazirmatn',sans-serif;-webkit-tap-highlight-color:transparent}
+:root{--primary:#00c853;--primary-dark:#009624;--accent:#64dd17;--danger:#ff1744;--gold:#ffc107;
+--bg:#050f07;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);--text:#fff;--text-dim:#888;--nav-bg:rgba(5,15,7,0.95)}
+body.light{--bg:#f5f7f5;--card:#fff;--border:rgba(0,0,0,0.08);--text:#111;--text-dim:#666;--nav-bg:rgba(255,255,255,0.95)}
+body{background:var(--bg);color:var(--text);overflow-x:hidden;transition:.4s;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+background:radial-gradient(circle at 20% 20%,rgba(0,200,83,.15) 0,transparent 40%),radial-gradient(circle at 80% 80%,rgba(100,221,23,.1) 0,transparent 40%)}
+
+/* Loader */
+#loader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .5s}
+#loader.hide{opacity:0;pointer-events:none}
+.loader-logo{font-size:70px;animation:bounce 1s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.loader-bar{width:200px;height:6px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.loader-fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:10px;animation:load 2s ease forwards}
+@keyframes load{to{width:100%}}
+
+/* Auth */
+#auth{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:25px;transition:.4s}
+#auth.hide{opacity:0;pointer-events:none}
+.auth-logo{font-size:60px;margin-bottom:15px;animation:bounce 2s infinite}
+.auth-title{font-size:28px;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-sub{color:var(--text-dim);font-size:14px;margin-bottom:35px;text-align:center}
+.auth-tabs{display:flex;gap:10px;background:var(--card);border-radius:15px;padding:5px;margin-bottom:25px;border:1px solid var(--border);width:100%;max-width:380px}
+.auth-tab{flex:1;padding:12px;border-radius:10px;border:none;background:transparent;color:var(--text-dim);font-family:inherit;font-weight:700;cursor:pointer;transition:.3s}
+.auth-tab.active{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff}
+.auth-form{width:100%;max-width:380px;display:flex;flex-direction:column;gap:15px}
+.inp-g{position:relative}
+.inp-g input{width:100%;padding:16px 50px 16px 18px;background:var(--card);border:1px solid var(--border);border-radius:15px;color:var(--text);font-family:inherit;font-size:15px;transition:.3s}
+.inp-g input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 20px rgba(0,200,83,.2)}
+.inp-g .icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px}
+.auth-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--primary),var(--accent));border:none;border-radius:15px;color:#000;font-family:inherit;font-size:16px;font-weight:900;cursor:pointer;transition:.3s;margin-top:10px}
+.auth-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,200,83,.4)}
+.auth-switch{color:var(--text-dim);font-size:13px;margin-top:20px;text-align:center}
+.auth-switch b{color:var(--accent);cursor:pointer}
+
+/* App */
+#app{display:none;padding-bottom:90px}
+#app.show{display:block}
+
+/* Topbar */
+.topbar{position:sticky;top:0;background:var(--nav-bg);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 18px;z-index:100;display:flex;align-items:center;justify-content:space-between}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-logo{font-size:26px}
+.topbar-name{font-weight:900;font-size:17px;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar-right{display:flex;gap:8px;align-items:center}
+.icon-btn{width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:.2s;position:relative;color:var(--text)}
+.icon-btn:active{transform:scale(.9)}
+.badge{position:absolute;top:-3px;left:-3px;background:var(--danger);color:#fff;font-size:10px;min-width:18px;height:18px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;padding:0 4px}
+
+/* Page */
+.page{display:none;padding:18px;animation:fadeIn .4s}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,rgba(0,200,83,.15),rgba(100,221,23,.08));border:1px solid rgba(0,200,83,.3);border-radius:22px;padding:22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero::after{content:'🥗';position:absolute;left:15px;bottom:-10px;font-size:80px;opacity:.15}
+.hero-greet{font-size:13px;color:var(--accent);margin-bottom:5px;font-weight:600}
+.hero-name{font-size:22px;font-weight:900;margin-bottom:8px}
+.hero-sub{font-size:13px;color:var(--text-dim);line-height:1.7}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px 10px;text-align:center;transition:.3s;cursor:pointer}
+.stat-card:active{transform:scale(.96)}
+.stat-icon{font-size:26px;margin-bottom:6px}
+.stat-val{font-size:18px;font-weight:900;color:var(--accent)}
+.stat-label{font-size:10px;color:var(--text-dim);margin-top:3px}
+
+/* Section */
+.sec-head{display:flex;justify-content:space-between;align-items:center;margin:25px 0 15px}
+.sec-title{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+.sec-more{font-size:12px;color:var(--accent);font-weight:600;cursor:pointer}
+
+/* Quick Actions */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.quick-item{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:12px 6px;text-align:center;cursor:pointer;transition:.2s}
+.quick-item:active{transform:scale(.93);border-color:var(--primary)}
+.quick-icon{font-size:24px;margin-bottom:5px}
+.quick-label{font-size:10px;color:var(--text-dim);font-weight:600}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:15px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 18px;background:var(--card);border:1px solid var(--border);border-radius:50px;font-size:12px;cursor:pointer;white-space:nowrap;transition:.2s;font-weight:600;color:var(--text)}
+.tab.active{background:linear-gradient(135deg,var(--primary),var(--accent));color:#000;border-color:transparent}
+
+/* Cards */
+.card-list{display:flex;flex-direction:column;gap:12px}
+.recipe-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;display:flex;align-items:center;gap:15px;cursor:pointer;transition:.3s}
+.recipe-card:active{transform:scale(.98);border-color:var(--primary)}
+.recipe-icon{width:60px;height:60px;border-radius:15px;background:linear-gradient(135deg,rgba(0,200,83,.2),rgba(100,221,23,.1));display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.recipe-info{flex:1;min-width:0}
+.recipe-name{font-size:15px;font-weight:700;margin-bottom:5px}
+.recipe-meta{font-size:11px;color:var(--text-dim);display:flex;gap:10px;flex-wrap:wrap}
+.recipe-meta span{display:flex;align-items:center;gap:3px}
+
+/* AI Box */
+.ai-box{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:15px}
+.ai-head{display:flex;align-items:center;gap:12px;padding-bottom:15px;border-bottom:1px solid var(--border)}
+.ai-avatar{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:24px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 15px rgba(0,200,83,.5)}50%{box-shadow:0 0 30px rgba(100,221,23,.8)}}
+.ai-head-info h4{font-size:15px}
+.ai-head-info span{font-size:11px;color:var(--accent);display:flex;align-items:center;gap:5px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+textarea,input[type=text],input[type=number],input[type=email],input[type=password],select{width:100%;padding:14px 16px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:14px;color:var(--text);font-family:inherit;font-size:14px;resize:none;transition:.3s}
+body.light textarea,body.light input,body.light select{background:rgba(0,0,0,.04)}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 15px rgba(0,200,83,.2)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:rgba(0,200,83,.1);border:1px solid rgba(0,200,83,.3);color:var(--accent);padding:6px 13px;border-radius:50px;font-size:12px;cursor:pointer;transition:.2s;font-weight:600}
+.chip:active{transform:scale(.95);background:rgba(0,200,83,.3)}
+.btn{width:100%;padding:15px;border:none;border-radius:14px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--accent));color:#000}
+.btn-primary:active{transform:scale(.97)}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text)}
+
+/* Result */
+.result-card{background:linear-gradient(135deg,rgba(0,200,83,.08),rgba(100,221,23,.04));border:1px solid rgba(0,200,83,.25);border-radius:18px;padding:18px;margin-top:15px;animation:fadeIn .5s}
+.result-title{font-size:17px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.result-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.rstat{background:rgba(255,255,255,.05);padding:7px 12px;border-radius:10px;font-size:11px;display:flex;align-items:center;gap:5px}
+body.light .rstat{background:rgba(0,0,0,.05)}
+.rstat b{color:var(--accent)}
+.steps{list-style:none;counter-reset:s}
+.steps li{counter-increment:s;padding:8px 0 8px 35px;position:relative;font-size:13px;color:var(--text-dim);line-height:1.7;border-bottom:1px solid var(--border)}
+.steps li:last-child{border-bottom:none}
+.steps li::before{content:counter(s);position:absolute;right:0;top:8px;width:24px;height:24px;background:var(--primary);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900}
+
+/* Missing */
+.missing-box{background:rgba(255,23,68,.06);border:1px solid rgba(255,23,68,.25);border-radius:18px;padding:15px;margin-top:15px}
+.missing-title{color:var(--danger);font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.missing-item{display:flex;justify-content:space-between;align-items:center;padding:11px;background:rgba(0,0,0,.2);border-radius:12px;margin-bottom:8px}
+body.light .missing-item{background:rgba(0,0,0,.04)}
+.missing-info{display:flex;align-items:center;gap:10px}
+.missing-info .em{font-size:24px}
+.missing-info h5{font-size:13px;margin-bottom:2px}
+.missing-info span{font-size:11px;color:var(--accent);font-weight:700}
+.add-btn{background:var(--primary);color:#000;border:none;padding:7px 13px;border-radius:50px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;transition:.2s}
+.add-btn:active{transform:scale(.95)}
+.add-btn.done{background:#444;color:#999}
+
+/* Search */
+.search-box{position:relative;margin-bottom:15px}
+.search-box input{padding-right:45px}
+.search-box .s-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--text-dim)}
+
+/* Shop */
+.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.shop-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;text-align:center;transition:.3s}
+.shop-card:active{transform:scale(.97)}
+.shop-img{font-size:45px;margin-bottom:10px}
+.shop-name{font-size:13px;font-weight:700;margin-bottom:5px}
+.shop-price{font-size:14px;color:var(--accent);font-weight:900;margin-bottom:10px}
+.shop-add{width:100%;padding:9px;background:var(--primary);color:#000;border:none;border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;transition:.2s}
+.shop-add:active{transform:scale(.95)}
+
+/* Exercise Card */
+.ex-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;cursor:pointer;transition:.3s}
+.ex-card:active{transform:scale(.98);border-color:var(--primary)}
+.ex-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.ex-icon{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,rgba(0,200,83,.2),rgba(100,221,23,.1));display:flex;align-items:center;justify-content:center;font-size:26px}
+.ex-title{flex:1}
+.ex-title h4{font-size:15px;font-weight:800;margin-bottom:3px}
+.ex-title span{font-size:11px;color:var(--text-dim)}
+.ex-desc{font-size:12px;color:var(--text-dim);line-height:1.7}
+.ex-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.ex-tag{font-size:10px;padding:4px 10px;border-radius:50px;background:rgba(0,200,83,.15);color:var(--accent);font-weight:700}
+
+/* Day Grid */
+.day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:15px 0}
+.day-cell{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 5px;text-align:center;cursor:pointer;transition:.2s}
+.day-cell:active{transform:scale(.95)}
+.day-cell.done{background:rgba(0,200,83,.2);border-color:var(--primary)}
+.day-num{font-size:16px;font-weight:900;color:var(--accent)}
+.day-lbl{font-size:9px;color:var(--text-dim);margin-top:3px}
+
+/* Video */
+.video-box{background:rgba(0,0,0,.3);border:2px dashed var(--border);border-radius:18px;padding:30px 20px;text-align:center;margin:15px 0;cursor:pointer;transition:.3s}
+.video-box:active{transform:scale(.98);border-color:var(--primary)}
+.video-play{font-size:50px;margin-bottom:10px}
+.video-title{font-size:14px;font-weight:800;margin-bottom:5px}
+.video-sub{font-size:11px;color:var(--text-dim)}
+
+/* Massage Card */
+.massage-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:.3s}
+.massage-card:active{transform:scale(.98);border-color:var(--primary)}
+.massage-icon{width:55px;height:55px;border-radius:15px;background:linear-gradient(135deg,rgba(255,193,7,.2),rgba(255,152,0,.1));display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.massage-info{flex:1}
+.massage-info h4{font-size:14px;font-weight:800;margin-bottom:4px}
+.massage-info span{font-size:11px;color:var(--text-dim)}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--nav-bg);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 5px 12px;z-index:500}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;cursor:pointer;color:var(--text-dim);transition:.3s;border-radius:12px}
+.nav-item.active{color:var(--accent)}
+.nav-item.active .nav-icon{transform:translateY(-3px)}
+.nav-icon{font-size:22px;transition:.3s}
+.nav-label{font-size:10px;font-weight:700}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:2000;display:none;align-items:flex-end;justify-content:center;animation:fadeIn .3s}
+.modal.active{display:flex}
+.modal-content{background:var(--bg);border-top-left-radius:25px;border-top-right-radius:25px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:25px;animation:slideUp .4s;border-top:2px solid var(--primary)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-head h3{font-size:18px;font-weight:800}
+.close-x{width:35px;height:35px;border-radius:50%;background:rgba(255,23,68,.2);border:1px solid rgba(255,23,68,.4);color:var(--danger);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+/* Cart */
+.cart-item{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)}
+.cart-info{display:flex;align-items:center;gap:12px;flex:1}
+.cart-info .em{font-size:26px}
+.cart-info h5{font-size:14px;margin-bottom:3px}
+.cart-info span{font-size:12px;color:var(--accent);font-weight:700}
+.qty-ctrl{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:50px;padding:3px;border:1px solid var(--border)}
+.qty-btn{width:26px;height:26px;border-radius:50%;background:var(--primary);color:#000;border:none;font-weight:900;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.qty-num{font-size:13px;font-weight:800;min-width:20px;text-align:center;color:var(--text)}
+.empty-cart{text-align:center;padding:40px 20px;color:var(--text-dim)}
+.empty-cart .e-icon{font-size:60px;margin-bottom:12px;opacity:.5}
+.total-row{display:flex;justify-content:space-between;padding:15px 0;border-top:2px solid var(--border);margin-top:15px}
+.total-row span:first-child{font-size:14px;color:var(--text-dim)}
+.total-row span:last-child{font-size:20px;font-weight:900;color:var(--accent)}
+
+/* Profile */
+.profile-head{text-align:center;padding:25px;background:linear-gradient(135deg,rgba(0,200,83,.15),rgba(100,221,23,.08));border-radius:22px;border:1px solid rgba(0,200,83,.3);margin-bottom:20px}
+.profile-avatar{width:85px;height:85px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:45px;margin:0 auto 15px;box-shadow:0 0 30px rgba(0,200,83,.4)}
+.profile-name{font-size:20px;font-weight:900;margin-bottom:5px}
+.profile-email{font-size:12px;color:var(--text-dim)}
+
+/* Menu */
+.menu-list{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.menu-item{display:flex;align-items:center;gap:15px;padding:15px;border-bottom:1px solid var(--border);cursor:pointer;transition:.2s}
+.menu-item:last-child{border-bottom:none}
+.menu-item:active{background:rgba(0,200,83,.05)}
+.menu-icon{width:40px;height:40px;border-radius:12px;background:rgba(0,200,83,.15);display:flex;align-items:center;justify-content:center;font-size:19px}
+.menu-text{flex:1}
+.menu-text h4{font-size:14px;margin-bottom:3px}
+.menu-text span{font-size:11px;color:var(--text-dim)}
+.menu-arrow{color:var(--text-dim);font-size:16px}
+
+/* BMI */
+.calc-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:15px}
+.calc-row{display:flex;gap:10px;margin-bottom:12px}
+.calc-row input{flex:1}
+.bmi-result{text-align:center;padding:20px;border-radius:15px;margin-top:15px;animation:fadeIn .4s}
+.bmi-result.good{background:rgba(0,200,83,.15);border:1px solid rgba(0,200,83,.4)}
+.bmi-result.warn{background:rgba(255,193,7,.15);border:1px solid rgba(255,193,7,.4)}
+.bmi-result.bad{background:rgba(255,23,68,.15);border:1px solid rgba(255,23,68,.4)}
+.bmi-value{font-size:38px;font-weight:900;margin-bottom:5px}
+.bmi-label{font-size:13px;color:var(--text-dim)}
+.bmi-recommend{margin-top:15px;padding:15px;background:rgba(0,200,83,.1);border-radius:12px;font-size:12px;line-height:1.8;text-align:right}
+
+/* Water */
+.water-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;text-align:center}
+.water-cups{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:15px 0}
+.cup{width:38px;height:48px;border-radius:5px 5px 12px 12px;border:2px solid var(--border);cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+.cup.filled{background:linear-gradient(180deg,#4fc3f7,#0288d1);border-color:#29b6f6}
+
+/* Plans */
+.plans-grid{display:grid;grid-template-columns:1fr;gap:15px}
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:25px;text-align:center;transition:.3s;position:relative;overflow:hidden}
+.plan-card.featured{border-color:var(--primary);background:linear-gradient(135deg,rgba(0,200,83,.1),rgba(100,221,23,.04))}
+.plan-card.featured::before{content:'محبوب‌ترین';position:absolute;top:15px;left:-32px;background:var(--primary);color:#000;padding:4px 40px;font-size:10px;font-weight:900;transform:rotate(-45deg)}
+.plan-icon{font-size:45px;margin-bottom:12px}
+.plan-name{font-size:20px;font-weight:900;margin-bottom:8px}
+.plan-desc{font-size:12px;color:var(--text-dim);margin-bottom:18px;min-height:36px}
+.plan-price{font-size:30px;font-weight:900;color:var(--accent);margin-bottom:5px}
+.plan-price small{font-size:12px;color:var(--text-dim);font-weight:400}
+.plan-features{list-style:none;text-align:right;margin:18px 0}
+.plan-features li{padding:7px 0;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.plan-features li::before{content:'✓';color:var(--accent);font-weight:900}
+
+/* Toast */
+.toast{position:fixed;bottom:100px;right:20px;left:20px;max-width:400px;margin:0 auto;background:var(--primary);color:#000;padding:14px 20px;border-radius:14px;font-weight:700;font-size:13px;text-align:center;transform:translateY(150px);transition:.4s;z-index:3000;box-shadow:0 10px 30px rgba(0,200,83,.4)}
+.toast.active{transform:translateY(0)}
+.toast.error{background:var(--danger);color:#fff}
+
+/* Loading AI */
+.ai-loading{display:none;flex-direction:column;align-items:center;gap:12px;padding:25px}
+.ai-loading.active{display:flex}
+.spinner{width:45px;height:45px;border:4px solid rgba(0,200,83,.2);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:13px;color:var(--accent);font-weight:600}
+
+/* Ingredients Table */
+.ing-table{width:100%;margin:15px 0;border-collapse:collapse}
+.ing-table th{background:rgba(0,200,83,.15);padding:10px;text-align:right;font-size:12px;color:var(--accent)}
+.ing-table td{padding:10px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-dim)}
+.ing-table td:first-child{font-weight:700;color:var(--text)}
+.ing-table tr:last-child td{border-bottom:none}
+
+/* Order History */
+.order-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:15px;margin-bottom:10px}
+.order-head{display:flex;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.order-id{font-size:12px;color:var(--text-dim)}
+.order-status{font-size:11px;padding:3px 10px;border-radius:50px;background:rgba(0,200,83,.15);color:var(--accent);font-weight:700}
+.order-items{font-size:12px;color:var(--text-dim);line-height:1.7}
+.order-total{margin-top:10px;font-size:14px;font-weight:800;color:var(--accent)}
+
+/* Personal Rec Box */
+.personal-box{background:linear-gradient(135deg,rgba(255,193,7,.15),rgba(255,152,0,.05));border:1px solid rgba(255,193,7,.4);border-radius:18px;padding:18px;margin-bottom:20px}
+.personal-title{font-size:15px;font-weight:800;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.personal-text{font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<div id="loader">
+<div class="loader-logo">🥗</div>
+<div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<div id="auth" class="hide">
+<div class="auth-logo">🥗</div>
+<div class="auth-title">NutriAI Pro</div>
+<div class="auth-sub">دستیار هوشمند تغذیه، ورزش و سلامت</div>
+<div class="auth-tabs">
+<button class="auth-tab active" onclick="switchAuth('login',this)">ورود</button>
+<button class="auth-tab" onclick="switchAuth('signup',this)">ثبت‌نام</button>
+</div>
+<div class="auth-form">
+<div class="inp-g" id="nameGroup" style="display:none"><span class="icon">👤</span><input type="text" id="authName" placeholder="نام شما"></div>
+<div class="inp-g"><span class="icon">📧</span><input type="email" id="authEmail" placeholder="ایمیل"></div>
+<div class="inp-g"><span class="icon">🔒</span><input type="password" id="authPass" placeholder="رمز عبور"></div>
+<button class="auth-btn" id="authBtn" onclick="handleAuth()">ورود به حساب</button>
+</div>
+<div class="auth-switch" id="authSwitch">حساب نداری؟ <b onclick="switchAuth('signup')">ثبت‌نام کن</b></div>
+</div>
+
+<div id="app">
+<div class="topbar">
+<div class="topbar-left">
+<span class="topbar-logo">🥗</span>
+<span class="topbar-name">NutriAI Pro</span>
+</div>
+<div class="topbar-right">
+<button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+<button class="icon-btn" onclick="openCart()">🛒<span class="badge" id="cartBadge" style="display:none">0</span></button>
+</div>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+<div class="hero">
+<div class="hero-greet">👋 سلام، خوش اومدی!</div>
+<div class="hero-name" id="userGreet">کاربر عزیز</div>
+<div class="hero-sub">امروز چقدر به سلامتت اهمیت دادی؟ بیا با هم یه برنامه کامل تغذیه و ورزش بچینیم!</div>
+</div>
+
+<div class="stats-grid">
+<div class="stat-card" onclick="openPage('profile')">
+<div class="stat-icon">🔥</div><div class="stat-val" id="statCal">۰</div><div class="stat-label">کالری امروز</div>
+</div>
+<div class="stat-card" onclick="openPage('profile')">
+<div class="stat-icon">💧</div><div class="stat-val" id="statWater">۰</div><div class="stat-label">لیوان آب</div>
+</div>
+<div class="stat-card" onclick="openPage('profile')">
+<div class="stat-icon">⚖️</div><div class="stat-val" id="statBMI">--</div><div class="stat-label">شاخص BMI</div>
+</div>
+</div>
+
+<div class="sec-head"><div class="sec-title">⚡ دسترسی سریع</div></div>
+<div class="quick-grid">
+<div class="quick-item" onclick="openPage('ai')"><div class="quick-icon">🤖</div><div class="quick-label">دستیار AI</div></div>
+<div class="quick-item" onclick="openPage('recipes')"><div class="quick-icon">📖</div><div class="quick-label">دستور پخت</div></div>
+<div class="quick-item" onclick="openPage('sport')"><div class="quick-icon">💪</div><div class="quick-label">ورزش</div></div>
+<div class="quick-item" onclick="openPage('massage')"><div class="quick-icon">💆</div><div class="quick-label">ماساژ</div></div>
+</div>
+
+<div class="sec-head"><div class="sec-title">🍽️ پیشنهاد امروز</div><span class="sec-more" onclick="openPage('recipes')">همه →</span></div>
+<div class="card-list" id="homeRecipes"></div>
+</div>
+
+<!-- AI -->
+<div class="page" id="page-ai">
+<div class="sec-head"><div class="sec-title">🤖 دستیار هوش مصنوعی</div></div>
+<div class="ai-box">
+<div class="ai-head">
+<div class="ai-avatar">🤖</div>
+<div class="ai-head-info"><h4>نوتری‌بات</h4><span><span class="dot"></span> آنلاین - آماده کمک</span></div>
+</div>
+<div id="aiInput">
+<div style="font-size:13px;color:var(--text-dim);margin-bottom:8px">🍎 مواد اولیه‌ای که الان توی خونه داری چیه؟</div>
+<textarea id="fridgeInput" rows="3" placeholder="مثلاً: تخم‌مرغ، گوجه، پیاز، برنج، ماست..."></textarea>
+<div style="font-size:12px;color:var(--text-dim);margin:12px 0 8px">✨ یا سریع انتخاب کن:</div>
+<div class="chips" id="quickChips"></div>
+<button class="btn btn-primary" style="margin-top:15px" onclick="analyzeFridge()"><span>🤖</span><span>تحلیل با هوش مصنوعی</span></button>
+</div>
+<div class="ai-loading" id="aiLoading"><div class="spinner"></div><div class="loading-txt" id="loadingTxt">در حال تحلیل...</div></div>
+<div id="aiResult"></div>
+</div>
+</div>
+
+<!-- RECIPES -->
+<div class="page" id="page-recipes">
+<div class="sec-head"><div class="sec-title">📖 کتابخانه دستور پخت</div></div>
+<div class="search-box"><span class="s-icon">🔍</span><input type="text" id="recipeSearch" placeholder="جستجو در دستور پخت..." oninput="filterRecipes()"></div>
+<div class="tabs" id="recipeCats"></div>
+<div class="card-list" id="recipesList"></div>
+</div>
+
+<!-- SPORT -->
+<div class="page" id="page-sport">
+<div class="sec-head"><div class="sec-title">💪 روتین‌های ورزشی</div></div>
+<div class="personal-box" id="sportPersonal" style="display:none">
+<div class="personal-title">🎯 پیشنهاد شخصی‌سازی شده</div>
+<div class="personal-text" id="sportPersonalText"></div>
+</div>
+<div id="sportList"></div>
+</div>
+
+<!-- MASSAGE -->
+<div class="page" id="page-massage">
+<div class="sec-head"><div class="sec-title">💆 آموزش ماساژ صورت</div></div>
+<div style="font-size:12px;color:var(--text-dim);margin-bottom:15px;line-height:1.8">۳۰ تکنیک ماساژ برای زیبایی، جوان‌سازی و رفع خستگی صورت. روی هر کدوم بزن تا راهنما و ویدیو رو ببینی.</div>
+<div id="massageList"></div>
+</div>
+
+<!-- SHOP -->
+<div class="page" id="page-shop">
+<div class="sec-head"><div class="sec-title">🛍️ فروشگاه مواد غذایی</div></div>
+<div class="search-box"><span class="s-icon">🔍</span><input type="text" id="shopSearch" placeholder="جستجو در محصولات..." oninput="filterShop()"></div>
+<div class="tabs" id="shopCats"></div>
+<div class="shop-grid" id="shopList"></div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+<div class="profile-head">
+<div class="profile-avatar" id="profileAvatar">👤</div>
+<div class="profile-name" id="profileName">کاربر</div>
+<div class="profile-email" id="profileEmail">user@email.com</div>
+</div>
+
+<div class="sec-head"><div class="sec-title">⚖️ محاسبه BMI و پیشنهاد هوشمند</div></div>
+<div class="calc-box">
+<div class="calc-row"><input type="number" id="bmiWeight" placeholder="وزن (kg)"><input type="number" id="bmiHeight" placeholder="قد (cm)"></div>
+<button class="btn btn-primary" onclick="calcBMI()">محاسبه و پیشنهاد</button>
+<div id="bmiResult"></div>
+</div>
+
+<div class="sec-head"><div class="sec-title">💧 ردیاب آب</div></div>
+<div class="water-box">
+<div style="font-size:13px;color:var(--text-dim)">هر روز ۸ لیوان آب بنوش!</div>
+<div class="water-cups" id="waterCups"></div>
+<div style="font-size:15px;font-weight:800;color:var(--accent)" id="waterCount">۰ / ۸ لیوان</div>
+</div>
+
+<div class="sec-head"><div class="sec-title">📋 تاریخچه سفارشات</div></div>
+<div id="orderHistory"></div>
+
+<div class="sec-head"><div class="sec-title">⚙️ تنظیمات</div></div>
+<div class="menu-list">
+<div class="menu-item" onclick="toggleTheme()"><div class="menu-icon">🌓</div><div class="menu-text"><h4>حالت نمایش</h4><span>تغییر بین شب و روز</span></div><div class="menu-arrow">›</div></div>
+<div class="menu-item" onclick="resetData()"><div class="menu-icon">🗑️</div><div class="menu-text"><h4>پاک کردن اطلاعات</h4><span>بازنشانی داده‌ها</span></div><div class="menu-arrow">›</div></div>
+<div class="menu-item" onclick="logout()"><div class="menu-icon" style="background:rgba(255,23,68,.15)">🚪</div><div class="menu-text"><h4 style="color:var(--danger)">خروج</h4><span>بازگشت به صفحه ورود</span></div><div class="menu-arrow">›</div></div>
+</div>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+<div class="nav-item active" data-page="home" onclick="openPage('home')"><div class="nav-icon">🏠</div><div class="nav-label">خانه</div></div>
+<div class="nav-item" data-page="ai" onclick="openPage('ai')"><div class="nav-icon">🤖</div><div class="nav-label">دستیار</div></div>
+<div class="nav-item" data-page="recipes" onclick="openPage('recipes')"><div class="nav-icon">📖</div><div class="nav-label">غذا</div></div>
+<div class="nav-item" data-page="sport" onclick="openPage('sport')"><div class="nav-icon">💪</div><div class="nav-label">ورزش</div></div>
+<div class="nav-item" data-page="massage" onclick="openPage('massage')"><div class="nav-icon">💆</div><div class="nav-label">ماساژ</div></div>
+</div>
+</div>
+
+<!-- Cart -->
+<div class="modal" id="cartModal">
+<div class="modal-content">
+<div class="modal-head"><h3>🛒 سبد خرید</h3><button class="close-x" onclick="closeCart()">✕</button></div>
+<div id="cartList"></div>
+<div id="cartFooter" style="display:none">
+<div class="total-row"><span>جمع کل:</span><span id="cartTotal">۰ تومان</span></div>
+<button class="btn btn-primary" onclick="checkout()">💳 تکمیل سفارش</button>
+</div>
+</div>
+</div>
+
+<!-- Generic Modal -->
+<div class="modal" id="genericModal">
+<div class="modal-content" id="genericModalContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== DATA ====================
+
+// دستور پخت - دسته‌بندی شده (نمونه‌های کامل + ساختار برای افزودن)
+const RECIPES = [
+// ===== کره‌ای (۵ نمونه) =====
+{id:1,name:'کیمچی استو',icon:'🍲',cat:'کره‌ای',time:'۴۰ دقیقه',cal:280,protein:'۱۸گرم',video:'Korean kimchi stew recipe',
+req:[{n:'کیمچی',g:'۳۰۰ گرم'},{n:'توفو',g:'۲۰۰ گرم'},{n:'گوشت خوک',g:'۱۵۰ گرم'},{n:'پیاز سبز',g:'۵۰ گرم'},{n:'سیر',g:'۳ حبه'}],
+steps:['کیمچی را با چاقو به قطعات ۳ سانتی برش بزنید.','گوشت خوک را در قابلمه با کمی روغن تفت دهید تا رنگش تغییر کند.','سیر رنده شده را اضافه کنید و ۳۰ ثانیه تفت دهید.','کیمچی را اضافه کنید و ۵ دقیقه تفت دهید.','۲ لیوان آب اضافه کنید و بگذارید ۲۰ دقیقه بجوشد.','توفو را مکعبی خرد کنید و اضافه کنید.','۵ دقیقه دیگر بپزید و با پیاز سبز تزئین کنید.']},
+
+{id:2,name:'بی‌بیم‌باپ',icon:'🍚',cat:'کره‌ای',time:'۳۰ دقیقه',cal:450,protein:'۲۲گرم',video:'Bibimbap Korean recipe',
+req:[{n:'برنج',g:'۲ پیمانه'},{n:'گوشت گاو',g:'۲۰۰ گرم'},{n:'اسفناج',g:'۱۰۰ گرم'},{n:'هویج',g:'۱ عدد'},{n:'تخم‌مرغ',g:'۲ عدد'},{n:'سس سویا',g:'۳ قاشق'}],
+steps:['برنج را بپزید و در کاسه بگذارید.','گوشت را با سس سویا و سیر مزه‌دار کنید و تفت دهید.','سبزیجات را جداگانه تفت دهید.','تخم‌مرغ را به صورت نیم‌پز سرخ کنید.','همه را روی برنج بچینید و با سس گوجوچانگ سرو کنید.']},
+
+{id:3,name:'جاپ‌چه',icon:'🍜',cat:'کره‌ای',time:'۳۵ دقیقه',cal:380,protein:'۲۰گرم',video:'Japchae Korean glass noodles',
+req:[{n:'نودل شیشه‌ای',g:'۲۰۰ گرم'},{n:'گوشت گاو',g:'۱۵۰ گرم'},{n:'اسفناج',g:'۱۰۰ گرم'},{n:'هویج',g:'۱ عدد'},{n:'سس سویا',g:'۴ قاشق'},{n:'کنجد',g:'۱ قاشق'}],
+steps:['نودل را در آب جوش ۵ دقیقه بپزید و آبکش کنید.','گوشت را با سس سویا مزه‌دار و تفت دهید.','سبزیجات را جدا تفت دهید.','همه را با نودل مخلوط کنید.','با روغن کنجد و کنجد تزئین کنید.']},
+
+{id:4,name:'کیم‌بپ',icon:'🍙',cat:'کره‌ای',time:'۲۵ دقیقه',cal:320,protein:'۱۲گرم',video:'Kimbap Korean rice roll',
+req:[{n:'برنج',g:'۲ پیمانه'},{n:'ورقه نوری',g:'۴ عدد'},{n:'هویج',g:'۱ عدد'},{n:'خیار',g:'۱ عدد'},{n:'تخم‌مرغ',g:'۲ عدد'},{n:'گوشت',g:'۱۰۰ گرم'}],
+steps:['برنج را با روغن کنجد مخلوط کنید.','تخم‌مرغ را به صورت نوار باریک سرخ کنید.','هویج و خیار را خلالی خرد کنید.','ورقه نوری را پهن کنید و برنج را روی آن پهن کنید.','مواد را وسط بچینید و رول کنید.','با چاقو تیز برش بزنید.']},
+
+{id:5,name:'ساندویچ کره‌ای',icon:'🥪',cat:'کره‌ای',time:'۱۵ دقیقه',cal:290,protein:'۱۵گرم',video:'Korean street toast recipe',
+req:[{n:'نان تست',g:'۴ برش'},{n:'تخم‌مرغ',g:'۲ عدد'},{n:'کلم',g:'۱۰۰ گرم'},{n:'هویج',g:'۱ عدد'},{n:'پنیر',g:'۲ برش'}],
+steps:['کلم و هویج را رنده کنید.','با تخم‌مرغ مخلوط کنید و در تابه سرخ کنید.','نان را با کره تفت دهید.','مواد را بین نان بگذارید و پنیر اضافه کنید.','با سس مایونز و کچاپ سرو کنید.']},
+
+// ===== سالاد (۵ نمونه) =====
+{id:6,name:'سالاد سزار',icon:'🥗',cat:'سالاد',time:'۱۵ دقیقه',cal:280,protein:'۱۸گرم',video:'Caesar salad recipe',
+req:[{n:'کاهو',g:'۲۰۰ گرم'},{n:'مرغ گریل',g:'۱۵۰ گرم'},{n:'نان تست',g:'۲ برش'},{n:'پنیر پارمزان',g:'۳۰ گرم'},{n:'سس سزار',g:'۳ قاشق'}],
+steps:['کاهو را خرد و شسته در کاسه بریزید.','مرغ گریل را به قطعات باریک برش دهید.','نان تست را مکعبی خرد و تفت دهید.','همه را با سس سزار مخلوط کنید.','پنیر پارمزان رنده کنید و روی سالاد بپاشید.']},
+
+{id:7,name:'سالاد یونانی',icon:'🥙',cat:'سالاد',time:'۱۰ دقیقه',cal:220,protein:'۹گرم',video:'Greek salad recipe',
+req:[{n:'خیار',g:'۲ عدد'},{n:'گوجه',g:'۳ عدد'},{n:'پنیر فتا',g:'۱۰۰ گرم'},{n:'زیتون',g:'۵۰ گرم'},{n:'پیاز قرمز',g:'۱ عدد'},{n:'روغن زیتون',g:'۲ قاشق'}],
+steps:['خیار و گوجه را مکعبی خرد کنید.','پیاز را خلالی باریک برش دهید.','همه را با زیتون مخلوط کنید.','پنیر فتا را روی آن خرد کنید.','با روغن زیتون و پونه کوهی مزه‌دار کنید.']},
+
+{id:8,name:'سالاد تبوله',icon:'🌿',cat:'سالاد',time:'۲۰ دقیقه',cal:180,protein:'۶گرم',video:'Tabbouleh salad recipe',
+req:[{n:'بلغور',g:'۱۰۰ گرم'},{n:'جعفری',g:'۱۰۰ گرم'},{n:'نعنا',g:'۵۰ گرم'},{n:'گوجه',g:'۲ عدد'},{n:'لیمو',g:'۲ عدد'}],
+steps:['بلغور را در آب گرم خیس کنید تا نرم شود.','جعفری و نعنا را ریز خرد کنید.','گوجه را نگینی خرد کنید.','همه را مخلوط کنید.','با آب لیمو و روغن زیتون مزه‌دار کنید.']},
+
+{id:9,name:'سالاد کینوا',icon:'🌾',cat:'سالاد',time:'۲۵ دقیقه',cal:250,protein:'۱۲گرم',video:'Quinoa salad recipe',
+req:[{n:'کینوا',g:'۱۰۰ گرم'},{n:'آووکادو',g:'۱ عدد'},{n:'گوجه گیلاسی',g:'۱۵۰ گرم'},{n:'خیار',g:'۱ عدد'},{n:'لیمو',g:'۱ عدد'}],
+steps:['کینوا را ۱۵ دقیقه بپزید و خنک کنید.','آووکادو را مکعبی خرد کنید.','گوجه و خیار را خرد کنید.','همه را مخلوط کنید.','با آبلیمو و روغن زیتون سرو کنید.']},
+
+{id:10,name:'سالاد کلم بروکلی',icon:'🥦',cat:'سالاد',time:'۱۵ دقیقه',cal:160,protein:'۸گرم',video:'Broccoli salad recipe',
+req:[{n:'کلم بروکلی',g:'۳۰۰ گرم'},{n:'هویج',g:'۱ عدد'},{n:'کشمش',g:'۳۰ گرم'},{n:'بادام',g:'۳۰ گرم'},{n:'ماست',g:'۳ قاشق'}],
+steps:['بروکلی را به گلچه‌های کوچک تقسیم کنید و ۳ دقیقه بخارپز کنید.','هویج را رنده کنید.','با کشمش و بادام مخلوط کنید.','سس ماست را اضافه کنید.','سرد سرو کنید.']},
+
+// ===== رستورانی سالم (۵ نمونه) =====
+{id:11,name:'استیک مرغ گریل',icon:'🍗',cat:'رستورانی',time:'۳۰ دقیقه',cal:380,protein:'۴۲گرم',video:'Grilled chicken steak healthy',
+req:[{n:'سینه مرغ',g:'۳۰۰ گرم'},{n:'کره',g:'۲۰ گرم'},{n:'سیر',g:'۳ حبه'},{n:'رزماری',g:'۲ شاخه'},{n:'لیمو',g:'۱ عدد'}],
+steps:['سینه مرغ را با نمک و فلفل مزه‌دار کنید.','کره را در تابه ذوب کنید و سیر را تفت دهید.','مرغ را ۶ دقیقه هر طرف گریل کنید.','رزماری و آبلیمو اضافه کنید.','۵ دقیقه استراحت دهید و سرو کنید.']},
+
+{id:12,name:'سالمون گریل با سبزیجات',icon:'🐟',cat:'رستورانی',time:'۲۵ دقیقه',cal:420,protein:'۳۵گرم',video:'Grilled salmon vegetables',
+req:[{n:'فیله سالمون',g:'۲۵۰ گرم'},{n:'مارچوبه',g:'۱۵۰ گرم'},{n:'کدو',g:'۱ عدد'},{n:'لیمو',g:'۱ عدد'},{n:'روغن زیتون',g:'۲ قاشق'}],
+steps:['سالمون را با نمک و فلفل مزه‌دار کنید.','سبزیجات را با روغن زیتون مخلوط کنید.','سالمون را ۴ دقیقه هر طرف گریل کنید.','سبزیجات را ۵ دقیقه تفت دهید.','با لیمو سرو کنید.']},
+
+{id:13,name:'پاستا آلفردو سبک',icon:'🍝',cat:'رستورانی',time:'۲۰ دقیقه',cal:450,protein:'۲۰گرم',video:'Healthy alfredo pasta',
+req:[{n:'پاستا',g:'۲۰۰ گرم'},{n:'قارچ',g:'۲۰۰ گرم'},{n:'خامه کم‌چرب',g:'۱۵۰ گرم'},{n:'پنیر پارمزان',g:'۵۰ گرم'},{n:'سیر',g:'۲ حبه'}],
+steps:['پاستا را ۸ دقیقه بپزید.','قارچ و سیر را تفت دهید.','خامه را اضافه کنید و ۳ دقیقه بپزید.','پاستا را اضافه کنید.','پنیر رنده کنید و سرو کنید.']},
+
+{id:14,name:'برگر بوقلمون',icon:'🍔',cat:'رستورانی',time:'۲۵ دقیقه',cal:390,protein:'۳۰گرم',video:'Turkey burger healthy recipe',
+req:[{n:'گوشت بوقلمون',g:'۳۰۰ گرم'},{n:'نان برگر',g:'۲ عدد'},{n:'کاهو',g:'۵۰ گرم'},{n:'گوجه',g:'۱ عدد'},{n:'پنیر چدار',g:'۲ برش'}],
+steps:['گوشت را با پیاز رنده و ادویه مخلوط کنید.','به شکل برگر درآورید.','در تابه ۵ دقیقه هر طرف بپزید.','نان را تست کنید.','با سبزیجات و پنیر سرو کنید.']},
+
+{id:15,name:'پیتزا سبزیجات خانگی',icon:'🍕',cat:'رستورانی',time:'۴۰ دقیقه',cal:350,protein:'۱۵گرم',video:'Veggie pizza healthy',
+req:[{n:'خمیر پیتزا',g:'۳۰۰ گرم'},{n:'سس گوجه',g:'۴ قاشق'},{n:'پنیر موزارلا',g:'۱۵۰ گرم'},{n:'فلفل دلمه',g:'۱ عدد'},{n:'قارچ',g:'۱۰۰ گرم'}],
+steps:['خمیر را پهن کنید.','سس گوجه را پهن کنید.','پنیر و سبزیجات را بچینید.','در فر ۲۲۰ درجه ۱۵ دقیقه بپزید.','داغ سرو کنید.']},
+
+// ===== کیک رژیمی (۵ نمونه) =====
+{id:16,name:'کیک شکلاتی بدون شکر',icon:'🍫',cat:'کیک رژیمی',time:'۴۵ دقیقه',cal:180,protein:'۸گرم',video:'Sugar free chocolate cake',
+req:[{n:'آرد جو',g:'۱۵۰ گرم'},{n:'کاکائو',g:'۳۰ گرم'},{n:'خرما',g:'۱۰۰ گرم'},{n:'تخم‌مرغ',g:'۳ عدد'},{n:'روغن نارگیل',g:'۵۰ گرم'}],
+steps:['خرما را در آب گرم خیس کنید و له کنید.','تخم‌مرغ‌ها را خوب هم بزنید.','آرد و کاکائو را اضافه کنید.','خرما و روغن را اضافه کنید.','در فر ۱۸۰ درجه ۳۰ دقیقه بپزید.']},
+
+{id:17,name:'چیزکیک توت‌فرنگی رژیمی',icon:'🍰',cat:'کیک رژیمی',time:'۳۰ دقیقه',cal:150,protein:'۱۰گرم',video:'Healthy strawberry cheesecake',
+req:[{n:'پنیر خامه‌ای کم‌چرب',g:'۲۰۰ گرم'},{n:'ماست یونانی',g:'۱۵۰ گرم'},{n:'ژلاتین',g:'۱۰ گرم'},{n:'توت‌فرنگی',g:'۲۰۰ گرم'},{n:'عسل',g:'۳ قاشق'}],
+steps:['ژلاتین را در آب گرم حل کنید.','پنیر و ماست را مخلوط کنید.','عسل و ژلاتین اضافه کنید.','توت‌فرنگی را لایه‌گذاری کنید.','۲ ساعت در یخچال بگذارید.']},
+
+{id:18,name:'براونی جو',icon:'🍫',cat:'کیک رژیمی',time:'۳۵ دقیقه',cal:200,protein:'۷گرم',video:'Oat brownie healthy',
+req:[{n:'آرد جو',g:'۱۵۰ گرم'},{n:'کاکائو',g:'۴۰ گرم'},{n:'موز',g:'۲ عدد'},{n:'تخم‌مرغ',g:'۲ عدد'},{n:'گردو',g:'۵۰ گرم'}],
+steps:['موزها را له کنید.','تخم‌مرغ اضافه کنید.','آرد و کاکائو را مخلوط کنید.','گردو را اضافه کنید.','در فر ۱۸۰ درجه ۲۵ دقیقه بپزید.']},
+
+{id:19,name:'کیک هویج رژیمی',icon:'🥕',cat:'کیک رژیمی',time:'۵۰ دقیقه',cal:170,protein:'۶گرم',video:'Healthy carrot cake',
+req:[{n:'آرد سبوس‌دار',g:'۲۰۰ گرم'},{n:'هویج رنده',g:'۲۰۰ گرم'},{n:'تخم‌مرغ',g:'۳ عدد'},{n:'روغن زیتون',g:'۵۰ گرم'},{n:'دارچین',g:'۱ قاشق'}],
+steps:['هویج را رنده کنید.','تخم‌مرغ و روغن را مخلوط کنید.','آرد و دارچین اضافه کنید.','هویج را مخلوط کنید.','در فر ۱۸۰ درجه ۴۰ دقیقه بپزید.']},
+
+{id:20,name:'کلوچه جو دوسر',icon:'🍪',cat:'کیک رژیمی',time:'۲۵ دقیقه',cal:120,protein:'۵گرم',video:'Oatmeal cookies healthy',
+req:[{n:'جو دوسر',g:'۱۵۰ گرم'},{n:'موز',g:'۲ عدد'},{n:'کشمش',g:'۵۰ گرم'},{n:'دارچین',g:'۱ قاشق'}],
+steps:['موزها را له کنید.','جو دوسر اضافه کنید.','کشمش و دارچین اضافه کنید.','به شکل کلوچه درآورید.','در فر ۱۸۰ درجه ۱۵ دقیقه بپزید.']},
+
+// ===== تنقلات سالم (۵ نمونه) =====
+{id:21,name:'چیپس سیب‌زمینی خانگی',icon:'🍟',cat:'تنقلات',time:'۲۵ دقیقه',cal:150,protein:'۳گرم',video:'Homemade baked chips',
+req:[{n:'سیب‌زمینی',g:'۳ عدد'},{n:'روغن زیتون',g:'۲ قاشق'},{n:'نمک',g:'به مقدار لازم'},{n:'پاپریکا',g:'۱ قاشق'}],
+steps:['سیب‌زمینی را نازک برش دهید.','در آب سرد ۳۰ دقیقه خیس کنید.','با روغن و ادویه مخلوط کنید.','در فر ۲۰۰ درجه ۲۰ دقیقه بپزید.','داغ سرو کنید.']},
+
+{id:22,name:'توپ انرژی خرما',icon:'⚡',cat:'تنقلات',time:'۱۵ دقیقه',cal:90,protein:'۳گرم',video:'Date energy balls',
+req:[{n:'خرما',g:'۲۰۰ گرم'},{n:'بادام',g:'۱۰۰ گرم'},{n:'جو دوسر',g:'۵۰ گرم'},{n:'کاکائو',g:'۲ قاشق'}],
+steps:['خرما را هسته بگیرید.','بادام را آسیاب کنید.','همه را مخلوط و چرخ کنید.','به شکل توپ درآورید.','در یخچال ۳۰ دقیقه بگذارید.']},
+
+{id:23,name:'پاپ‌کورن خانگی',icon:'🍿',cat:'تنقلات',time:'۱۰ دقیقه',cal:80,protein:'۲گرم',video:'Healthy popcorn',
+req:[{n:'ذرت بوداده',g:'۱۰۰ گرم'},{n:'روغن نارگیل',g:'۱ قاشق'},{n:'نمک',g:'به مقدار لازم'}],
+steps:['روغن را در قابلمه داغ کنید.','ذرت را اضافه کنید.','درپوش بگذارید.','وقتی صدای ترقیدن قطع شد، بردارید.','با نمک سرو کنید.']},
+
+{id:24,name:'ماست یخ‌زده توت‌فرنگی',icon:'🍓',cat:'تنقلات',time:'۳ ساعت',cal:100,protein:'۶گرم',video:'Frozen yogurt bites',
+req:[{n:'ماست یونانی',g:'۳۰۰ گرم'},{n:'توت‌فرنگی',g:'۱۵۰ گرم'},{n:'عسل',g:'۲ قاشق'}],
+steps:['توت‌فرنگی را خرد کنید.','با ماست و عسل مخلوط کنید.','در قالب بریزید.','۳ ساعت در فریزر بگذارید.','به عنوان تنقلات سرو کنید.']},
+
+{id:25,name:'کراکر جو',icon:'🥨',cat:'تنقلات',time:'۳۰ دقیقه',cal:110,protein:'۴گرم',video:'Oat crackers healthy',
+req:[{n:'آرد جو',g:'۱۵۰ گرم'},{n:'روغن زیتون',g:'۳ قاشق'},{n:'نمک',g:'۱ قاشق چای‌خوری'},{n:'آب',g:'به مقدار لازم'}],
+steps:['آرد و نمک را مخلوط کنید.','روغن و آب اضافه کنید.','خمیر را پهن کنید.','به قطعات کوچک برش دهید.','در فر ۱۸۰ درجه ۲۰ دقیقه بپزید.']},
+
+// ===== ساده با مواد کم (۵ نمونه) =====
+{id:26,name:'نان و پنیر و گردو',icon:'🧀',cat:'ساده',time:'۵ دقیقه',cal:280,protein:'۱۲گرم',video:'Persian breakfast simple',
+req:[{n:'نان سنگک',g:'۲ برش'},{n:'پنیر',g:'۵۰ گرم'},{n:'گردو',g:'۳۰ گرم'},{n:'سبزی خوردن',g:'به مقدار لازم'}],
+steps:['نان را روی بشقاب بگذارید.','پنیر را ورقه کنید.','گردو را خرد کنید.','با سبزی خوردن سرو کنید.']},
+
+{id:27,name:'املت ساده',icon:'🍳',cat:'ساده',time:'۱۰ دقیقه',cal:220,protein:'۱۵گرم',video:'Simple omelette',
+req:[{n:'تخم‌مرغ',g:'۳ عدد'},{n:'روغن',g:'۱ قاشق'},{n:'نمک و فلفل',g:'به مقدار لازم'}],
+steps:['تخم‌مرغ‌ها را در کاسه بشکنید.','نمک و فلفل اضافه کنید و هم بزنید.','در تابه روغن داغ کنید.','تخم‌مرغ را بریزید و ۳ دقیقه بپزید.','تا کنید و سرو کنید.']},
+
+{id:28,name:'ماکارونی ساده',icon:'🍝',cat:'ساده',time:'۱۵ دقیقه',cal:320,protein:'۱۰گرم',video:'Simple pasta',
+req:[{n:'ماکارونی',g:'۱۵۰ گرم'},{n:'کره',g:'۲۰ گرم'},{n:'پنیر رنده',g:'۳۰ گرم'},{n:'نمک',g:'به مقدار لازم'}],
+steps:['ماکارونی را ۱۰ دقیقه بپزید.','آبکش کنید.','کره را اضافه کنید.','پنیر رنده کنید.','سرو کنید.']},
+
+{id:29,name:'تست پنیر',icon:'🥪',cat:'ساده',time:'۸ دقیقه',cal:250,protein:'۱۳گرم',video:'Simple cheese toast',
+req:[{n:'نان تست',g:'۲ برش'},{n:'پنیر ورقه',g:'۲ برش'},{n:'کره',g:'۱۰ گرم'}],
+steps:['نان را با کره تفت دهید.','پنیر را بین نان بگذارید.','۲ دقیقه در تابه گرم کنید.','سرو کنید.']},
+
+{id:30,name:'سالاد ساده کاهو',icon:'🥬',cat:'ساده',time:'۵ دقیقه',cal:80,protein:'۳گرم',video:'Simple lettuce salad',
+req:[{n:'کاهو',g:'۱۵۰ گرم'},{n:'آبلیمو',g:'۲ قاشق'},{n:'روغن زیتون',g:'۱ قاشق'},{n:'نمک',g:'به مقدار لازم'}],
+steps:['کاهو را خرد کنید.','آبلیمو و روغن اضافه کنید.','نمک بزنید.','سرو کنید.']}
+];
+
+// ===== روتین‌های ورزشی ۳۰ روزه =====
+const EXERCISES = [
+{id:1,name:'کاهش وزن ۳۰ روزه',icon:'🔥',type:'weight-loss',days:30,desc:'برنامه ترکیبی چربی‌سوزی با تمرینات هوازی و مقاومتی',tags:['چربی‌سوزی','هوازی','۳۰ روز'],goal:'کاهش وزن',video:'30 day weight loss workout'},
+{id:2,name:'بدن ساعت شنی ۳۰ روزه',icon:'⏳',type:'hourglass',days:30,desc:'تمرینات مخصوص فرم‌دهی به کمر و باسن برای رسیدن به بدن ساعت شنی',tags:['فرم‌دهی','کمر باریک','باسن'],goal:'فرم بدنی',video:'hourglass body workout 30 day'},
+{id:3,name:'تسکین درد کمر و زانو و گردن',icon:'🦴',type:'pain',days:30,desc:'حرکات کششی و تقویتی برای کاهش دردهای مزمن',tags:['کشش','درد','درمانی'],goal:'رفع درد',video:'back knee neck pain relief exercises'},
+{id:4,name:'اصلاح قوز کمر',icon:'🧍',type:'posture',days:30,desc:'تمرینات اصلاح پاسچر و صاف کردن قوس کمر',tags:['پاسچر','قوز','اصلاحی'],goal:'اصلاح پاسچر',video:'fix hunchback posture exercises'},
+{id:5,name:'اصلاح گودی کمر',icon:'🧘',type:'lordosis',days:30,desc:'تمرینات اصلاح گودی کمر و تقویت عضلات مرکزی',tags:['گودی کمر','مرکزی','اصلاحی'],goal:'اصلاح پاسچر',video:'fix lordosis lower back exercises'},
+{id:6,name:'تسکین چرخش مادرزادی لگن',icon:'🦵',type:'pelvic',days:30,desc:'حرکات مخصوص کاهش درد و اصلاح چرخش لگن',tags:['لگن','مادرزادی','درمانی'],goal:'رفع درد',video:'pelvic tilt rotation exercises'}
+];
+
+// ===== ماساژ صورت =====
+const MASSAGES = [
+{id:1,name:'ماساژ کوچک کردن بینی',icon:'👃',time:'۵ دقیقه',desc:'تکنیک‌های فشار و کشش برای فرم‌دهی به بینی',video:'nose slimming massage'},
+{id:2,name:'ماساژ رفع پف زیر چشم',icon:'👁️',time:'۳ دقیقه',desc:'حرکات ملایم برای کاهش پف و سیاهی دور چشم',video:'eye puffiness massage'},
+{id:3,name:'ماساژ لیفت صورت',icon:'✨',time:'۱۰ دقیقه',desc:'تکنیک‌های کشش برای جوان‌سازی و لیفت پوست',video:'face lifting massage'},
+{id:4,name:'ماساژ رفع خط اخم',icon:'😠',time:'۴ دقیقه',desc:'حرکات برای صاف کردن خطوط بین ابرو',video:'frown lines massage'},
+{id:5,name:'ماساژ گونه و خط لبخند',icon:'😊',time:'۵ دقیقه',desc:'کاهش خطوط دور دهان و فرم‌دهی گونه',video:'smile lines massage'},
+{id:6,name:'ماساژ غبغب',icon:'💪',time:'۶ دقیقه',desc:'تمرینات و ماساژ برای رفع غبغب و فرم‌دهی فک',video:'double chin massage'},
+{id:7,name:'ماساژ پیشانی',icon:'🧖',time:'۳ دقیقه',desc:'رفع تنش و خطوط پیشانی',video:'forehead massage'},
+{id:8,name:'ماساژ گردن و فک',icon:'💆',time:'۸ دقیقه',desc:'رفع گرفتگی و فرم‌دهی فک و گردن',video:'neck jaw massage'},
+{id:9,name:'ماساژ رفع خستگی صورت',icon:'😌',time:'۷ دقیقه',desc:'آرام‌سازی کامل عضلات صورت',video:'face relaxation massage'},
+{id:10,name:'ماساژ تخلیه لنفاوی صورت',icon:'💧',time:'۱۰ دقیقه',desc:'کاهش احتباس آب و پف صورت',video:'lymphatic drainage face massage'},
+{id:11,name:'ماساژ گونه‌ها',icon:'🌹',time:'۴ دقیقه',desc:'افزایش گردش خون و درخشندگی',video:'cheek massage'},
+{id:12,name:'ماساژ لب',icon:'💋',time:'۳ دقیقه',desc:'حجم‌دهی و نرمی لب',video:'lip massage'},
+{id:13,name:'ماساژ گوش و شقیقه',icon:'👂',time:'۵ دقیقه',desc:'رفع سردرد و آرامش',video:'ear temple massage'},
+{id:14,name:'ماساژ ضد چین و چروک',icon:'🌟',time:'۱۲ دقیقه',desc:'تکنیک‌های تخصصی جوان‌سازی',video:'anti aging face massage'},
+{id:15,name:'ماساژ با گوا شا',icon:'🪨',time:'۱۰ دقیقه',desc:'استفاده از سنگ گوا شا برای لیفت',video:'gua sha face massage'},
+{id:16,name:'ماساژ با رولر',icon:'🎋',time:'۸ دقیقه',desc:'استفاده از رولر یشم',video:'jade roller massage'},
+{id:17,name:'ماساژ رفع جوش',icon:'🔴',time:'۶ دقیقه',desc:'تکنیک‌های ملایم برای پوست جوش‌دار',video:'acne face massage'},
+{id:18,name:'ماساژ روشن‌کننده پوست',icon:'☀️',time:'۹ دقیقه',desc:'افزایش شفافیت و درخشندگی',video:'brightening face massage'},
+{id:19,name:'ماساژ ضد استرس',icon:'🧘',time:'۱۵ دقیقه',desc:'آرام‌سازی کامل ذهن و صورت',video:'stress relief face massage'},
+{id:20,name:'ماساژ بین دو ابرو',icon:'😤',time:'۳ دقیقه',desc:'رفع سردرد و تنش',video:'third eye massage'},
+{id:21,name:'ماساژ نرم‌کننده خطوط گردن',icon:'🦢',time:'۶ دقیقه',desc:'کاهش خطوط گردن',video:'neck lines massage'},
+{id:22,name:'ماساژ تقویت مژه و ابرو',icon:'👁️‍🗨️',time:'۴ دقیقه',desc:'تحریک رشد مژه و ابرو',video:'eyelash eyebrow massage'},
+{id:23,name:'ماساژ صورت با یخ',icon:'🧊',time:'۵ دقیقه',desc:'سفت‌کننده و رفع پف',video:'ice face massage'},
+{id:24,name:'ماساژ با روغن آرگان',icon:'💧',time:'۱۰ دقیقه',desc:'آبرسانی عمیق',video:'argan oil face massage'},
+{id:25,name:'ماساژ برای پوست خشک',icon:'🧴',time:'۸ دقیقه',desc:'تکنیک‌های مخصوص پوست خشک',video:'dry skin face massage'},
+{id:26,name:'ماساژ برای پوست چرب',icon:'💦',time:'۷ دقیقه',desc:'کنترل چربی و پاکسازی',video:'oily skin face massage'},
+{id:27,name:'ماساژ ضد لک',icon:'🎨',time:'۹ دقیقه',desc:'کاهش لک و یکدست‌سازی',video:'dark spots face massage'},
+{id:28,name:'ماساژ قبل از خواب',icon:'🌙',time:'۶ دقیقه',desc:'آرام‌سازی برای خواب بهتر',video:'bedtime face massage'},
+{id:29,name:'ماساژ صورتی (نوجوانان)',icon:'🌸',time:'۵ دقیقه',desc:'مراقبت ساده برای پوست جوان',video:'teen face massage'},
+{id:30,name:'ماساژ کامل صورت ۱۰ مرحله‌ای',icon:'⭐',time:'۲۰ دقیقه',desc:'روتین کامل حرفه‌ای',video:'complete face massage routine'}
+];
+
+// ===== مواد فروشگاه =====
+const PRODUCTS = [
+{id:1,name:'تخم‌مرغ (۶ عددی)',icon:'🥚',cat:'پروتئین',price:35000},
+{id:2,name:'گوجه‌فرنگی (۱ کیلو)',icon:'🍅',cat:'سبزیجات',price:25000},
+{id:3,name:'پیاز (۱ کیلو)',icon:'🧅',cat:'سبزیجات',price:18000},
+{id:4,name:'برنج ایرانی (۱ کیلو)',icon:'🍚',cat:'غلات',price:85000},
+{id:5,name:'سینه مرغ (۱ کیلو)',icon:'🍗',cat:'پروتئین',price:165000},
+{id:6,name:'ماست پرچرب (۱ کیلو)',icon:'🥛',cat:'لبنیات',price:45000},
+{id:7,name:'خیار (۱ کیلو)',icon:'🥒',cat:'سبزیجات',price:22000},
+{id:8,name:'سیب (۱ کیلو)',icon:'🍎',cat:'میوه',price:40000},
+{id:9,name:'نان سنگک',icon:'🥖',cat:'غلات',price:15000},
+{id:10,name:'پنیر لیقوان',icon:'🧀',cat:'لبنیات',price:120000},
+{id:11,name:'کره حیوانی',icon:'🧈',cat:'لبنیات',price:78000},
+{id:12,name:'عسل طبیعی',icon:'🍯',cat:'غلات',price:250000},
+{id:13,name:'خرما',icon:'🌴',cat:'میوه',price:65000},
+{id:14,name:'گردو',icon:'🌰',cat:'خشکبار',price:180000},
+{id:15,name:'بادام',icon:'🥜',cat:'خشکبار',price:220000},
+{id:16,name:'روغن زیتون',icon:'🫒',cat:'غلات',price:320000}
+];
+
+const PLANS = [
+{id:1,name:'پایه',icon:'🌱',desc:'شروع سبک زندگی سالم',price:'رایگان',period:'',features:['۵ برنامه غذایی ماه','تحلیل یخچال','سفارش فروشگاه'],featured:false},
+{id:2,name:'ورزشکاران',icon:'💪',desc:'برنامه‌های پروتئینی حرفه‌ای',price:'۹۹,۰۰۰',period:'ت/ماه',features:['برنامه نامحدود','درشت‌مغذی','مشاوره متخصص','۱۵٪ تخفیف'],featured:true},
+{id:3,name:'دیابتی',icon:'💊',desc:'کنترل قند تخصصی',price:'۱۴۹,۰۰۰',period:'ت/ماه',features:['نظارت پزشک','شاخص GI','پیگیری هفتگی','۲۰٪ تخفیف'],featured:false},
+{id:4,name:'خانوادگی',icon:'👨‍👩‍👧',desc:'برنامه کل خانواده',price:'۱۹۹,۰۰۰',period:'ت/ماه',features:['تا ۵ عضو','اختصاصی هر فرد','لیست خرید','۲۵٪ تخفیف'],featured:false}
+];
+
+// ==================== STATE ====================
+let state = {user:null,cart:[],orders:[],water:0,bmi:null,theme:'dark',doneDays:{}};
+
+// ==================== INIT ====================
+window.onload = () => {
+setTimeout(() => {
+document.getElementById('loader').classList.add('hide');
+loadState();
+if(state.user){
+document.getElementById('auth').classList.add('hide');
+document.getElementById('app').classList.add('show');
+initApp();
+}else{
+document.getElementById('auth').classList.remove('hide');
+}
+},2000);
+};
+
+function saveState(){localStorage.setItem('nutriai_pro',JSON.stringify(state))}
+function loadState(){
+const s = localStorage.getItem('nutriai_pro');
+if(s){try{state = {...state,...JSON.parse(s)}}catch(e){}}
+if(state.theme==='light')document.body.classList.add('light');
+}
+
+// ==================== AUTH ====================
+let authMode='login';
+function switchAuth(mode,btn){
+authMode = mode;
+document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+if(btn)btn.classList.add('active');
+else document.querySelectorAll('.auth-tab')[mode==='login'?0:1].classList.add('active');
+document.getElementById('nameGroup').style.display = mode==='signup'?'block':'none';
+document.getElementById('authBtn').innerText = mode==='login'?'ورود به حساب':'ایجاد حساب';
+document.getElementById('authSwitch').innerHTML = mode==='login'
+?'حساب نداری؟ <b onclick="switchAuth(\'signup\')">ثبت‌نام کن</b>'
+:'حساب داری؟ <b onclick="switchAuth(\'login\')">وارد شو</b>';
+}
+function handleAuth(){
+const email = document.getElementById('authEmail').value.trim();
+const pass = document.getElementById('authPass').value.trim();
+const name = document.getElementById('authName').value.trim();
+if(!email||!pass){showToast('همه فیلدها را پر کن!',true);return}
+if(!email.includes('@')){showToast('ایمیل معتبر نیست!',true);return}
+if(pass.length<4){showToast('رمز حداقل ۴ کاراکتر!',true);return}
+state.user = {name: name||email.split('@')[0], email};
+saveState();
+document.getElementById('auth').classList.add('hide');
+document.getElementById('app').classList.add('show');
+initApp();
+showToast('🎉 خوش آمدی '+state.user.name+'!');
+}
+function logout(){
+if(!confirm('خارج میشی؟'))return;
+state.user=null;saveState();
+document.getElementById('app').classList.remove('show');
+document.getElementById('auth').classList.remove('hide');
+}
+
+// ==================== APP ====================
+function initApp(){
+const u = state.user;
+document.getElementById('userGreet').innerText = u.name;
+document.getElementById('profileName').innerText = u.name;
+document.getElementById('profileEmail').innerText = u.email;
+document.getElementById('profileAvatar').innerText = u.name.charAt(0).toUpperCase();
+renderQuickChips();
+renderRecipeCats();
+renderRecipes();
+renderExercises();
+renderMassages();
+renderShop();
+renderShopCats();
+renderPlans();
+renderHomeRecipes();
+renderWaterCups();
+renderCart();
+renderOrders();
+updateStats();
+}
+
+function openPage(p){
+document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+document.getElementById('page-'+p).classList.add('active');
+document.querySelector('.nav-item[data-page="'+p+'"]')?.classList.add('active');
+window.scrollTo({top:0,behavior:'smooth'});
+if(p==='profile'){renderOrders();renderWaterCups();updateStats()}
+if(p==='sport')showSportPersonal()
+}
+
+function toggleTheme(){
+state.theme = state.theme==='dark'?'light':'dark';
+document.body.classList.toggle('light');
+document.getElementById('themeBtn').innerText = state.theme==='dark'?'🌙':'☀️';
+saveState();
+}
+
+// ==================== AI ====================
+function renderQuickChips(){
+const items = ['تخم‌مرغ','گوجه','پیاز','برنج','مرغ','ماست','خیار','سیب','پنیر','نان'];
+document.getElementById('quickChips').innerHTML = items.map(i=>
+`<span class="chip" onclick="addChip('${i}')">${i}</span>`).join('');
+}
+function addChip(t){
+const inp = document.getElementById('fridgeInput');
+inp.value = inp.value.trim()?inp.value+'، '+t:t;
+}
+function analyzeFridge(){
+const inp = document.getElementById('fridgeInput').value.trim();
+if(!inp){showToast('مواد یخچال رو وارد کن!',true);return}
+const ings = inp.split(/[،,]+/).map(i=>i.trim()).filter(i=>i);
+document.getElementById('aiInput').style.display='none';
+document.getElementById('aiLoading').classList.add('active');
+const texts=['تحلیل مواد...','جستجو در دیتابیس...','محاسبه ارزش غذایی...','پیدا کردن فروشگاه...','آماده‌سازی برنامه...'];
+let i=0;
+const iv = setInterval(()=>{i=(i+1)%texts.length;document.getElementById('loadingTxt').innerText=texts[i]},700);
+setTimeout(()=>{
+clearInterval(iv);
+document.getElementById('aiLoading').classList.remove('active');
+showAIResult(ings);
+},3500);
+}
+function showAIResult(ings){
+let best=null,bestMatch=-1;
+RECIPES.forEach(r=>{
+const m = r.req.filter(req=>ings.some(ing=>ing.includes(req.n)||req.n.includes(ing))).length;
+if(m>bestMatch){bestMatch=m;best=r}
+});
+if(!best||bestMatch===0)best=RECIPES[0];
+const missing = best.req.filter(req=>!ings.some(ing=>ing.includes(req.n)||req.n.includes(ing)));
+const prices = {'تخم‌مرغ':35000,'گوجه':25000,'پیاز':18000,'برنج':85000,'مرغ':165000,'ماست':45000,'خیار':22000,'سیب':40000};
+const emojis = {'تخم‌مرغ':'🥚','گوجه':'🍅','پیاز':'🧅','برنج':'🍚','مرغ':'🍗','ماست':'🥛','خیار':'🥒','سیب':'🍎'};
+
+let html = `
+<div class="result-card">
+<div class="result-title">${best.icon} پیشنهاد امروز: ${best.name}</div>
+<div class="result-stats">
+<div class="rstat">⏱️ <b>${best.time}</b></div>
+<div class="rstat">🔥 <b>${best.cal}</b> کالری</div>
+<div class="rstat">💪 <b>${best.protein}</b></div>
+</div>
+<div style="font-size:13px;color:var(--text-dim);margin-bottom:8px">📝 مواد لازم (گرم):</div>
+<table class="ing-table"><thead><tr><th>ماده</th><th>مقدار</th></tr></thead><tbody>
+${best.req.map(r=>`<tr><td>${emojis[r.n]||'🛒'} ${r.n}</td><td>${r.g}</td></tr>`).join('')}
+</tbody></table>
+<div style="font-size:13px;color:var(--text-dim);margin:15px 0 8px">👨‍🍳 مراحل پخت:</div>
+<ol class="steps">${best.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+</div>`;
+
+if(missing.length>0){
+html += `<div class="missing-box">
+<div class="missing-title">⚠️ این مواد رو نداری - سفارش بده:</div>
+${missing.map(m=>`
+<div class="missing-item">
+<div class="missing-info">
+<span class="em">${emojis[m.n]||'🛒'}</span>
+<div><h5>${m.n} (${m.g})</h5><span>${(prices[m.n]||20000).toLocaleString('fa-IR')} تومان</span></div>
+</div>
+<button class="add-btn" onclick='quickAdd(${JSON.stringify(m.n)},${prices[m.n]||20000},this)'>➕</button>
+</div>`).join('')}
+</div>`;
+}else{
+html += `<div class="missing-box" style="background:rgba(0,200,83,.06);border-color:rgba(0,200,83,.25)">
+<div class="missing-title" style="color:var(--accent)">🎉 همه مواد رو داری!</div>
+<p style="color:var(--text-dim);font-size:13px;line-height:1.7">میتونی همین الان بپزی. نوش جان! 😋</p>
+</div>`;
+}
+document.getElementById('aiResult').innerHTML = html;
+}
+function quickAdd(name,price,btn){
+addToCart({id:'q'+Date.now(),name,price,icon:'🛒'});
+btn.innerText='✓';btn.classList.add('done');btn.disabled=true;
+}
+
+// ==================== RECIPES ====================
+let currentCat = 'همه';
+function renderRecipeCats(){
+const cats = ['همه',...new Set(RECIPES.map(r=>r.cat))];
+document.getElementById('recipeCats').innerHTML = cats.map(c=>
+`<div class="tab ${c===currentCat?'active':''}" onclick="filterCat('${c}')">${c}</div>`).join('');
+}
+function filterCat(c){currentCat=c;renderRecipeCats();filterRecipes()}
+function filterRecipes(){
+const q = document.getElementById('recipeSearch').value.trim();
+let list = RECIPES;
+if(currentCat!=='همه')list = list.filter(r=>r.cat===currentCat);
+if(q)list = list.filter(r=>r.name.includes(q)||r.req.some(i=>i.n.includes(q)));
+renderRecipes(list);
+}
+function renderRecipes(list=RECIPES){
+document.getElementById('recipesList').innerHTML = list.map(r=>`
+<div class="recipe-card" onclick="showRecipe(${r.id})">
+<div class="recipe-icon">${r.icon}</div>
+<div class="recipe-info">
+<div class="recipe-name">${r.name}</div>
+<div class="recipe-meta">
+<span>⏱️ ${r.time}</span><span>🔥 ${r.cal}</span><span>💪 ${r.protein}</span>
+<span>📂 ${r.cat}</span>
+</div>
+</div>
+</div>`).join('') || '<div style="text-align:center;padding:30px;color:var(--text-dim)">نتیجه‌ای یافت نشد</div>';
+}
+function renderHomeRecipes(){
+const list = RECIPES.slice(0,4);
+document.getElementById('homeRecipes').innerHTML = list.map(r=>`
+<div class="recipe-card" onclick="showRecipe(${r.id})">
+<div class="recipe-icon">${r.icon}</div>
+<div class="recipe-info">
+<div class="recipe-name">${r.name}</div>
+<div class="recipe-meta"><span>⏱️ ${r.time}</span><span>🔥 ${r.cal}</span></div>
+</div>
+</div>`).join('');
+}
+function showRecipe(id){
+const r = RECIPES.find(x=>x.id===id);
+if(!r)return;
+const emojis = {'تخم‌مرغ':'🥚','گوجه':'🍅','پیاز':'🧅','برنج':'🍚','مرغ':'🍗','ماست':'🥛','خیار':'🥒','سیب':'🍎'};
+document.getElementById('genericModalContent').innerHTML = `
+<div class="modal-head"><h3>${r.icon} ${r.name}</h3><button class="close-x" onclick="closeGeneric()">✕</button></div>
+<div class="result-stats">
+<div class="rstat">⏱️ <b>${r.time}</b></div>
+<div class="rstat">🔥 <b>${r.cal}</b> کالری</div>
+<div class="rstat">💪 <b>${r.protein}</b></div>
+<div class="rstat">📂 <b>${r.cat}</b></div>
+</div>
+<div class="video-box" onclick="openVideo('${r.video}')">
+<div class="video-play">▶️</div>
+<div class="video-title">تماشای ویدیو آموزشی</div>
+<div class="video-sub">${r.video}</div>
+</div>
+<div style="font-size:13px;color:var(--text-dim);margin:15px 0 8px">📝 مواد لازم (گرم دقیق):</div>
+<table class="ing-table"><thead><tr><th>ماده</th><th>مقدار</th></tr></thead><tbody>
+${r.req.map(i=>`<tr><td>${emojis[i.n]||'🛒'} ${i.n}</td><td>${i.g}</td></tr>`).join('')}
+</tbody></table>
+<div style="font-size:13px;color:var(--text-dim);margin:15px 0 8px">👨‍🍳 مراحل پخت:</div>
+<ol class="steps">${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+<button class="btn btn-primary" style="margin-top:15px" onclick="addAllIngredients(${r.id})">🛒 افزودن همه مواد به سبد</button>
+`;
+document.getElementById('genericModal').classList.add('active');
+}
+function addAllIngredients(id){
+const r = RECIPES.find(x=>x.id===id);
+const prices = {'تخم‌مرغ':35000,'گوجه':25000,'پیاز':18000,'برنج':85000,'مرغ':165000,'ماست':45000,'خیار':22000,'سیب':40000};
+r.req.forEach(i=>{
+addToCart({id:'r'+r.id+i.n,name:i.n,price:prices[i.n]||20000,icon:'🛒'});
+});
+showToast('✅ همه مواد به سبد اضافه شد');
+}
+
+// ==================== EXERCISES ====================
+function renderExercises(){
+document.getElementById('sportList').innerHTML = EXERCISES.map(e=>`
+<div class="ex-card" onclick="showExercise(${e.id})">
+<div class="ex-head">
+<div class="ex-icon">${e.icon}</div>
+<div class="ex-title">
+<h4>${e.name}</h4>
+<span>${e.days} روز • ${e.goal}</span>
+</div>
+</div>
+<div class="ex-desc">${e.desc}</div>
+<div class="ex-tags">${e.tags.map(t=>`<span class="ex-tag">${t}</span>`).join('')}</div>
+</div>`).join('');
+}
+function showExercise(id){
+const e = EXERCISES.find(x=>x.id===id);
+if(!e)return;
+let daysHtml = '<div class="day-grid">';
+for(let d=1;d<=30;d++){
+const done = state.doneDays[e.id+'_'+d];
+daysHtml += `<div class="day-cell ${done?'done':''}" onclick="toggleDay(${e.id},${d})">
+<div class="day-num">${d}</div><div class="day-lbl">${done?'✓':'روز'}</div></div>`;
+}
+daysHtml += '</div>';
+
+document.getElementById('genericModalContent').innerHTML = `
+<div class="modal-head"><h3>${e.icon} ${e.name}</h3><button class="close-x" onclick="closeGeneric()">✕</button></div>
+<div class="result-stats">
+<div class="rstat">📅 <b>${e.days} روز</b></div>
+<div class="rstat">🎯 <b>${e.goal}</b></div>
+</div>
+<div class="ex-desc" style="margin:15px 0">${e.desc}</div>
+<div class="video-box" onclick="openVideo('${e.video}')">
+<div class="video-play">▶️</div>
+<div class="video-title">تماشای ویدیو آموزشی روتین</div>
+<div class="video-sub">${e.video}</div>
+</div>
+<div style="font-size:13px;color:var(--text-dim);margin:20px 0 8px">📅 پیشرفت ۳۰ روزه (روی هر روز بزن):</div>
+${daysHtml}
+<button class="btn btn-primary" style="margin-top:15px" onclick="resetDays(${e.id})">🔄 ریست کردن پیشرفت</button>
+`;
+document.getElementById('genericModal').classList.add('active');
+}
+function toggleDay(exId,day){
+const key = exId+'_'+day;
+state.doneDays[key] = !state.doneDays[key];
+saveState();
+showExercise(exId);
+showToast(state.doneDays[key]?'✅ روز '+day+' انجام شد!':'روز '+day+' لغو شد');
+}
+function resetDays(exId){
+Object.keys(state.doneDays).forEach(k=>{if(k.startsWith(exId+'_'))delete state.doneDays[k]});
+saveState();showExercise(exId);
+}
+function showSportPersonal(){
+if(!state.bmi){document.getElementById('sportPersonal').style.display='none';return}
+const bmi = parseFloat(state.bmi);
+const el = document.getElementById('sportPersonal');
+el.style.display = 'block';
+let txt = '';
+if(bmi<18.5){
+txt = '⚖️ شما کمبود وزن دارید. پیشنهاد ما: برنامه‌های غذایی پرکالری از بخش دستور پخت (دسته‌های رستورانی و کیک رژیمی) + ورزش‌های سبک برای افزایش اشتها.';
+}else if(bmi<25){
+txt = '✅ وزن شما نرمال است! برای حفظ تناسب اندام، روتین «بدن ساعت شنی» و «کاهش وزن» را به صورت متعادل انجام دهید.';
+}else if(bmi<30){
+txt = '🔥 شما اضافه وزن دارید. پیشنهاد ما: روتین «کاهش وزن ۳۰ روزه» + رژیم غذایی کم‌کالری از دسته سالادها.';
+}else{
+txt = '⚠️ شما چاقی دارید. لطفاً قبل از شروع هر روتین با پزشک مشورت کنید. پیشنهاد: پیاده‌روی روزانه + دستور پخت‌های ساده و کم‌کالری.';
+}
+document.getElementById('sportPersonalText').innerText = txt;
+}
+
+// ==================== MASSAGES ====================
+function renderMassages(){
+document.getElementById('massageList').innerHTML = MASSAGES.map(m=>`
+<div class="massage-card" onclick="showMassage(${m.id})">
+<div class="massage-icon">${m.icon}</div>
+<div class="massage-info">
+<h4>${m.name}</h4>
+<span>⏱️ ${m.time} • ${m.desc}</span>
+</div>
+</div>`).join('');
+}
+function showMassage(id){
+const m = MASSAGES.find(x=>x.id===id);
+if(!m)return;
+document.getElementById('genericModalContent').innerHTML = `
+<div class="modal-head"><h3>${m.icon} ${m.name}</h3><button class="close-x" onclick="closeGeneric()">✕</button></div>
+<div class="result-stats">
+<div class="rstat">⏱️ <b>${m.time}</b></div>
+<div class="rstat">💆 <b>ماساژ صورت</b></div>
+</div>
+<div class="ex-desc" style="margin:15px 0">${m.desc}</div>
+<div class="video-box" onclick="openVideo('${m.video}')">
+<div class="video-play">▶️</div>
+<div class="video-title">تماشای ویدیو آموزشی</div>
+<div class="video-sub">${m.video}</div>
+</div>
+<div style="font-size:13px;color:var(--text-dim);margin:20px 0 8px">💡 نکات مهم:</div>
+<ol class="steps">
+<li>قبل از ماساژ، دست‌ها را با آب گرم بشویید.</li>
+<li>از کرم یا روغن ماساژ استفاده کنید تا پوست کشیده نشود.</li>
+<li>حرکات را ملایم و رو به بالا انجام دهید.</li>
+<li>روزانه ۵ تا ۱۰ دقیقه کافی است.</li>
+<li>در صورت درد یا قرمزی، فوراً متوقف کنید.</li>
+</ol>`;
+document.getElementById('genericModal').classList.add('active');
+}
+
+// ==================== VIDEO ====================
+function openVideo(searchTerm){
+const url = 'https://www.youtube.com/results?search_query='+encodeURIComponent(searchTerm);
+window.open(url,'_blank');
+}
+
+// ==================== SHOP ====================
+let shopCat = 'همه';
+function renderShopCats(){
+const cats = ['همه',...new Set(PRODUCTS.map(p=>p.cat))];
+document.getElementById('shopCats').innerHTML = cats.map(c=>
+`<div class="tab ${c===shopCat?'active':''}" onclick="filterShopCat('${c}')">${c}</div>`).join('');
+}
+function filterShopCat(c){shopCat=c;renderShopCats();filterShop()}
+function filterShop(){
+const q = document.getElementById('shopSearch').value.trim();
+let list = PRODUCTS;
+if(shopCat!=='همه')list = list.filter(p=>p.cat===shopCat);
+if(q)list = list.filter(p=>p.name.includes(q));
+renderShop(list);
+}
+function renderShop(list=PRODUCTS){
+document.getElementById('shopList').innerHTML = list.map(p=>`
+<div class="shop-card">
+<div class="shop-img">${p.icon}</div>
+<div class="shop-name">${p.name}</div>
+<div class="shop-price">${p.price.toLocaleString('fa-IR')} ت</div>
+<button class="shop-add" onclick="addToCart({id:${p.id},name:'${p.name}',price:${p.price},icon:'${p.icon}'})">➕ افزودن</button>
+</div>`).join('') || '<div style="text-align:center;padding:30px;color:var(--text-dim);grid-column:1/-1">محصولی یافت نشد</div>';
+}
+
+// ==================== CART ====================
+function addToCart(item){
+const ex = state.cart.find(c=>c.id===item.id);
+if(ex)ex.qty++;
+else state.cart.push({...item,qty:1});
+saveState();renderCart();showToast('✅ به سبد اضافه شد');
+}
+function renderCart(){
+const badge = document.getElementById('cartBadge');
+const totalQty = state.cart.reduce((s,i)=>s+i.qty,0);
+if(totalQty>0){badge.style.display='flex';badge.innerText=totalQty}
+else badge.style.display='none';
+
+const list = document.getElementById('cartList');
+const footer = document.getElementById('cartFooter');
+if(state.cart.length===0){
+list.innerHTML = '<div class="empty-cart"><div class="e-icon">🛒</div><p>سبد خریدت خالیه!</p></div>';
+footer.style.display='none';return;
+}
+list.innerHTML = state.cart.map((i,idx)=>`
+<div class="cart-item">
+<div class="cart-info">
+<span class="em">${i.icon||'🛒'}</span>
+<div><h5>${i.name}</h5><span>${(i.price*i.qty).toLocaleString('fa-IR')} ت</span></div>
+</div>
+<div class="qty-ctrl">
+<button class="qty-btn" onclick="changeQty(${idx},-1)">−</button>
+<span class="qty-num">${i.qty}</span>
+<button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
+</div>
+</div>`).join('');
+const total = state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+document.getElementById('cartTotal').innerText = total.toLocaleString('fa-IR')+' تومان';
+footer.style.display='block';
+}
+function changeQty(i,d){
+state.cart[i].qty += d;
+if(state.cart[i].qty<=0)state.cart.splice(i,1);
+saveState();renderCart();
+}
+function openCart(){document.getElementById('cartModal').classList.add('active');renderCart()}
+function closeCart(){document.getElementById('cartModal').classList.remove('active')}
+function checkout(){
+if(state.cart.length===0)return;
+const total = state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+const order = {
+id:'ORD'+Date.now().toString().slice(-6),
+date:new Date().toLocaleDateString('fa-IR'),
+items:state.cart.map(i=>({name:i.name,qty:i.qty,price:i.price,icon:i.icon})),
+total, status:'در حال آماده‌سازی'
+};
+state.orders.unshift(order);
+state.cart = [];
+saveState();renderCart();renderOrders();closeCart();
+showToast('🎉 سفارش ثبت شد!');
+}
+function renderOrders(){
+const el = document.getElementById('orderHistory');
+if(!state.orders||state.orders.length===0){
+el.innerHTML = '<div style="text-align:center;padding:25px;color:var(--text-dim);font-size:13px">هنوز سفارشی نداری</div>';
+return;
+}
+el.innerHTML = state.orders.map(o=>`
+<div class="order-card">
+<div class="order-head">
+<span class="order-id">#${o.id} • ${o.date}</span>
+<span class="order-status">${o.status}</span>
+</div>
+<div class="order-items">${o.items.map(i=>`${i.icon||'🛒'} ${i.name} × ${i.qty}`).join(' • ')}</div>
+<div class="order-total">جمع: ${o.total.toLocaleString('fa-IR')} تومان</div>
+</div>`).join('');
+}
+
+// ==================== PLANS ====================
+function renderPlans(){
+// plans handled in profile section if needed
+}
+
+// ==================== BMI ====================
+function calcBMI(){
+const w = parseFloat(document.getElementById('bmiWeight').value);
+const h = parseFloat(document.getElementById('bmiHeight').value)/100;
+if(!w||!h){showToast('وزن و قد رو وارد کن!',true);return}
+const bmi = (w/(h*h)).toFixed(1);
+state.bmi = bmi;saveState();updateStats();
+let label,cls,rec;
+if(bmi<18.5){
+label='کمبود وزن';cls='warn';
+rec='⚖️ پیشنهاد: دستور پخت‌های پرکالری از دسته‌های «رستورانی» و «کیک رژیمی» را مصرف کن. ورزش‌های سبک برای افزایش اشتها.';
+}else if(bmi<25){
+label='وزن نرمال ✓';cls='good';
+rec='✅ عالیه! برای حفظ تناسب، روتین «بدن ساعت شنی» و رژیم متعادل را ادامه بده.';
+}else if(bmi<30){
+label='اضافه وزن';cls='warn';
+rec='🔥 پیشنهاد: روتین «کاهش وزن ۳۰ روزه» + رژیم کم‌کالری از دسته «سالاد»ها.';
+}else{
+label='چاقی';cls='bad';
+rec='⚠️ لطفاً قبل از هر روتین با پزشک مشورت کن. پیشنهاد: پیاده‌روی روزانه + دستور پخت‌های کم‌کالری.';
+}
+document.getElementById('bmiResult').innerHTML = `
+<div class="bmi-result ${cls}">
+<div class="bmi-value">${parseFloat(bmi).toLocaleString('fa-IR')}</div>
+<div class="bmi-label">${label}</div>
+</div>
+<div class="bmi-recommend">${rec}</div>`;
+showSportPersonal();
+}
+
+// ==================== WATER ====================
+function renderWaterCups(){
+const el = document.getElementById('waterCups');
+if(!el)return;
+let html = '';
+for(let i=0;i<8;i++){
+html += `<div class="cup ${i<state.water?'filled':''}" onclick="toggleWater(${i})"></div>`;
+}
+el.innerHTML = html;
+document.getElementById('waterCount').innerText = state.water.toLocaleString('fa-IR')+' / ۸ لیوان';
+}
+function toggleWater(i){
+state.water = i+1;
+saveState();renderWaterCups();updateStats();
+}
+
+// ==================== STATS ====================
+function updateStats(){
+document.getElementById('statCal').innerText = (state.orders?.length? '—':'۰');
+document.getElementById('statWater').innerText = state.water.toLocaleString('fa-IR');
+document.getElementById('statBMI').innerText = state.bmi?parseFloat(state.bmi).toLocaleString('fa-IR'):'--';
+}
+
+// ==================== UTIL ====================
+function showToast(msg,err=false){
+const t = document.getElementById('toast');
+t.innerText = msg;
+t.classList.toggle('error',err);
+t.classList.add('active');
+setTimeout(()=>t.classList.remove('active'),2500);
+}
+function closeGeneric(){document.getElementById('genericModal').classList.remove('active')}
+function resetData(){
+if(!confirm('همه اطلاعات پاک بشه؟'))return;
+localStorage.removeItem('nutriai_pro');
+location.reload();
+}
+
+document.getElementById('cartModal').addEventListener('click',e=>{if(e.target.id==='cartModal')closeCart()});
+document.getElementById('genericModal').addEventListener('click',e=>{if(e.target.id==='genericModal')closeGeneric()});
+
+setTimeout(()=>{
+document.getElementById('themeBtn').innerText = state.theme==='dark'?'🌙':'☀️';
+},100);
+</script>
+</body>
+</html>
