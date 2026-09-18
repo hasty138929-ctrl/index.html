@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>هوش تغذیه | NutriAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Vazirmatn',sans-serif;-webkit-tap-highlight-color:transparent}
+:root{
+--primary:#00c853;--primary-dark:#009624;--accent:#64dd17;--danger:#ff1744;
+--bg:#050f07;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);
+--text:#fff;--text-dim:#888;--nav-bg:rgba(5,15,7,0.95);
+}
+body.light{
+--bg:#f5f7f5;--card:#fff;--border:rgba(0,0,0,0.08);
+--text:#111;--text-dim:#666;--nav-bg:rgba(255,255,255,0.95);
+}
+body{background:var(--bg);color:var(--text);overflow-x:hidden;transition:background .4s,color .4s;min-height:100vh}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;
+background:radial-gradient(circle at 20% 20%,rgba(0,200,83,.15) 0%,transparent 40%),
+radial-gradient(circle at 80% 80%,rgba(100,221,23,.1) 0%,transparent 40%);pointer-events:none}
+
+/* Loading */
+#loader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;
+align-items:center;justify-content:center;gap:20px;transition:opacity .5s}
+#loader.hide{opacity:0;pointer-events:none}
+.loader-logo{font-size:70px;animation:bounce 1s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.loader-bar{width:200px;height:6px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.loader-fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));
+border-radius:10px;animation:load 2s ease forwards}
+@keyframes load{to{width:100%}}
+
+/* Auth */
+#auth{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;
+align-items:center;justify-content:center;padding:25px;transition:.4s}
+#auth.hide{opacity:0;pointer-events:none}
+.auth-logo{font-size:60px;margin-bottom:15px;animation:bounce 2s infinite}
+.auth-title{font-size:28px;font-weight:900;margin-bottom:8px;
+background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-sub{color:var(--text-dim);font-size:14px;margin-bottom:35px;text-align:center}
+.auth-tabs{display:flex;gap:10px;background:var(--card);border-radius:15px;padding:5px;margin-bottom:25px;
+border:1px solid var(--border);width:100%;max-width:380px}
+.auth-tab{flex:1;padding:12px;border-radius:10px;border:none;background:transparent;color:var(--text-dim);
+font-family:inherit;font-weight:700;cursor:pointer;transition:.3s}
+.auth-tab.active{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff}
+.auth-form{width:100%;max-width:380px;display:flex;flex-direction:column;gap:15px}
+.input-group{position:relative}
+.input-group input{width:100%;padding:16px 50px 16px 18px;background:var(--card);border:1px solid var(--border);
+border-radius:15px;color:var(--text);font-family:inherit;font-size:15px;transition:.3s}
+.input-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 20px rgba(0,200,83,.2)}
+.input-group .icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px}
+.auth-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--primary),var(--accent));
+border:none;border-radius:15px;color:#000;font-family:inherit;font-size:16px;font-weight:900;cursor:pointer;
+transition:.3s;margin-top:10px}
+.auth-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,200,83,.4)}
+.auth-switch{color:var(--text-dim);font-size:13px;margin-top:20px;text-align:center}
+.auth-switch b{color:var(--accent);cursor:pointer}
+
+/* App */
+#app{display:none;padding-bottom:90px}
+#app.show{display:block}
+
+/* Top Bar */
+.topbar{position:sticky;top:0;background:var(--nav-bg);backdrop-filter:blur(20px);
+border-bottom:1px solid var(--border);padding:12px 18px;z-index:100;display:flex;
+align-items:center;justify-content:space-between}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-logo{font-size:26px}
+.topbar-name{font-weight:900;font-size:17px;
+background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar-right{display:flex;gap:8px;align-items:center}
+.icon-btn{width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);
+display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;
+transition:.2s;position:relative;color:var(--text)}
+.icon-btn:active{transform:scale(.9)}
+.badge{position:absolute;top:-3px;left:-3px;background:var(--danger);color:#fff;font-size:10px;
+min-width:18px;height:18px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+font-weight:700;padding:0 4px}
+
+/* Page */
+.page{display:none;padding:18px;animation:fadeIn .4s}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,rgba(0,200,83,.15),rgba(100,221,23,.08));
+border:1px solid rgba(0,200,83,.3);border-radius:22px;padding:22px;margin-bottom:20px;
+position:relative;overflow:hidden}
+.hero::after{content:'🥗';position:absolute;left:15px;bottom:-10px;font-size:80px;opacity:.15}
+.hero-greet{font-size:13px;color:var(--accent);margin-bottom:5px;font-weight:600}
+.hero-name{font-size:22px;font-weight:900;margin-bottom:8px}
+.hero-sub{font-size:13px;color:var(--text-dim);line-height:1.7}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px 10px;
+text-align:center;transition:.3s}
+.stat-card:active{transform:scale(.96)}
+.stat-icon{font-size:26px;margin-bottom:6px}
+.stat-val{font-size:18px;font-weight:900;color:var(--accent)}
+.stat-label{font-size:10px;color:var(--text-dim);margin-top:3px}
+
+/* Section */
+.sec-head{display:flex;justify-content:space-between;align-items:center;margin:25px 0 15px}
+.sec-title{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+.sec-more{font-size:12px;color:var(--accent);font-weight:600;cursor:pointer}
+
+/* Quick Actions */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.quick-item{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:12px 6px;
+text-align:center;cursor:pointer;transition:.2s}
+.quick-item:active{transform:scale(.93);border-color:var(--primary)}
+.quick-icon{font-size:24px;margin-bottom:5px}
+.quick-label{font-size:10px;color:var(--text-dim);font-weight:600}
+
+/* Cards */
+.card-list{display:flex;flex-direction:column;gap:12px}
+.recipe-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;
+display:flex;align-items:center;gap:15px;cursor:pointer;transition:.3s}
+.recipe-card:active{transform:scale(.98);border-color:var(--primary)}
+.recipe-icon{width:60px;height:60px;border-radius:15px;background:linear-gradient(135deg,rgba(0,200,83,.2),rgba(100,221,23,.1));
+display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.recipe-info{flex:1;min-width:0}
+.recipe-name{font-size:15px;font-weight:700;margin-bottom:5px}
+.recipe-meta{font-size:11px;color:var(--text-dim);display:flex;gap:10px;flex-wrap:wrap}
+.recipe-meta span{display:flex;align-items:center;gap:3px}
+
+/* AI Chat */
+.ai-box{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;
+display:flex;flex-direction:column;gap:15px}
+.ai-head{display:flex;align-items:center;gap:12px;padding-bottom:15px;border-bottom:1px solid var(--border)}
+.ai-avatar{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));
+display:flex;align-items:center;justify-content:center;font-size:24px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 15px rgba(0,200,83,.5)}50%{box-shadow:0 0 30px rgba(100,221,23,.8)}}
+.ai-head-info h4{font-size:15px}
+.ai-head-info span{font-size:11px;color:var(--accent);display:flex;align-items:center;gap:5px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+textarea,input[type=text],input[type=number],input[type=email],input[type=password],select{
+width:100%;padding:14px 16px;background:rgba(0,0,0,.2);border:1px solid var(--border);
+border-radius:14px;color:var(--text);font-family:inherit;font-size:14px;resize:none;transition:.3s}
+body.light textarea,body.light input,body.light select{background:rgba(0,0,0,.04)}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 15px rgba(0,200,83,.2)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:rgba(0,200,83,.1);border:1px solid rgba(0,200,83,.3);color:var(--accent);
+padding:6px 13px;border-radius:50px;font-size:12px;cursor:pointer;transition:.2s;font-weight:600}
+.chip:active{transform:scale(.95);background:rgba(0,200,83,.3)}
+.btn{width:100%;padding:15px;border:none;border-radius:14px;font-family:inherit;font-size:15px;
+font-weight:800;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--accent));color:#000}
+.btn-primary:active{transform:scale(.97)}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text)}
+.btn-danger{background:rgba(255,23,68,.15);color:var(--danger);border:1px solid rgba(255,23,68,.3)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Result */
+.result-card{background:linear-gradient(135deg,rgba(0,200,83,.08),rgba(100,221,23,.04));
+border:1px solid rgba(0,200,83,.25);border-radius:18px;padding:18px;margin-top:15px;animation:fadeIn .5s}
+.result-title{font-size:17px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.result-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.rstat{background:rgba(255,255,255,.05);padding:7px 12px;border-radius:10px;font-size:11px;
+display:flex;align-items:center;gap:5px}
+body.light .rstat{background:rgba(0,0,0,.05)}
+.rstat b{color:var(--accent)}
+.steps{list-style:none;counter-reset:s}
+.steps li{counter-increment:s;padding:8px 0 8px 35px;position:relative;font-size:13px;
+color:var(--text-dim);line-height:1.7;border-bottom:1px solid var(--border)}
+.steps li:last-child{border-bottom:none}
+.steps li::before{content:counter(s);position:absolute;right:0;top:8px;width:24px;height:24px;
+background:var(--primary);color:#000;border-radius:50%;display:flex;align-items:center;
+justify-content:center;font-size:11px;font-weight:900}
+
+/* Missing */
+.missing-box{background:rgba(255,23,68,.06);border:1px solid rgba(255,23,68,.25);
+border-radius:18px;padding:15px;margin-top:15px}
+.missing-title{color:var(--danger);font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.missing-item{display:flex;justify-content:space-between;align-items:center;padding:11px;
+background:rgba(0,0,0,.2);border-radius:12px;margin-bottom:8px}
+body.light .missing-item{background:rgba(0,0,0,.04)}
+.missing-info{display:flex;align-items:center;gap:10px}
+.missing-info .em{font-size:24px}
+.missing-info h5{font-size:13px;margin-bottom:2px}
+.missing-info span{font-size:11px;color:var(--accent);font-weight:700}
+.add-btn{background:var(--primary);color:#000;border:none;padding:7px 13px;border-radius:50px;
+font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;transition:.2s}
+.add-btn:active{transform:scale(.95)}
+.add-btn.done{background:#444;color:#999}
+
+/* Search */
+.search-box{position:relative;margin-bottom:15px}
+.search-box input{padding-right:45px}
+.search-box .s-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--text-dim)}
+.cats{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:15px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{padding:8px 16px;background:var(--card);border:1px solid var(--border);border-radius:50px;
+font-size:12px;cursor:pointer;white-space:nowrap;transition:.2s;font-weight:600;color:var(--text)}
+.cat.active{background:linear-gradient(135deg,var(--primary),var(--accent));color:#000;border-color:transparent}
+
+/* Shop */
+.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.shop-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;
+text-align:center;transition:.3s}
+.shop-card:active{transform:scale(.97)}
+.shop-img{font-size:45px;margin-bottom:10px}
+.shop-name{font-size:13px;font-weight:700;margin-bottom:5px}
+.shop-price{font-size:14px;color:var(--accent);font-weight:900;margin-bottom:10px}
+.shop-add{width:100%;padding:9px;background:var(--primary);color:#000;border:none;
+border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;transition:.2s}
+.shop-add:active{transform:scale(.95)}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--nav-bg);backdrop-filter:blur(20px);
+border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 5px 12px;z-index:500}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;
+cursor:pointer;color:var(--text-dim);transition:.3s;border-radius:12px}
+.nav-item.active{color:var(--accent)}
+.nav-item.active .nav-icon{transform:translateY(-3px)}
+.nav-icon{font-size:22px;transition:.3s}
+.nav-label{font-size:10px;font-weight:700}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:2000;
+display:none;align-items:flex-end;justify-content:center;animation:fadeIn .3s}
+.modal.active{display:flex}
+.modal-content{background:var(--bg);border-top-left-radius:25px;border-top-right-radius:25px;
+width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:25px;animation:slideUp .4s;
+border-top:2px solid var(--primary)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-head h3{font-size:18px;font-weight:800}
+.close-x{width:35px;height:35px;border-radius:50%;background:rgba(255,23,68,.2);border:1px solid rgba(255,23,68,.4);
+color:var(--danger);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+/* Cart */
+.cart-item{display:flex;justify-content:space-between;align-items:center;padding:13px 0;
+border-bottom:1px solid var(--border)}
+.cart-info{display:flex;align-items:center;gap:12px;flex:1}
+.cart-info .em{font-size:26px}
+.cart-info h5{font-size:14px;margin-bottom:3px}
+.cart-info span{font-size:12px;color:var(--accent);font-weight:700}
+.qty-ctrl{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:50px;
+padding:3px;border:1px solid var(--border)}
+.qty-btn{width:26px;height:26px;border-radius:50%;background:var(--primary);color:#000;border:none;
+font-weight:900;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.qty-num{font-size:13px;font-weight:800;min-width:20px;text-align:center;color:var(--text)}
+.empty-cart{text-align:center;padding:40px 20px;color:var(--text-dim)}
+.empty-cart .e-icon{font-size:60px;margin-bottom:12px;opacity:.5}
+.total-row{display:flex;justify-content:space-between;padding:15px 0;border-top:2px solid var(--border);margin-top:15px}
+.total-row span:first-child{font-size:14px;color:var(--text-dim)}
+.total-row span:last-child{font-size:20px;font-weight:900;color:var(--accent)}
+
+/* Profile */
+.profile-head{text-align:center;padding:25px;background:linear-gradient(135deg,rgba(0,200,83,.15),rgba(100,221,23,.08));
+border-radius:22px;border:1px solid rgba(0,200,83,.3);margin-bottom:20px}
+.profile-avatar{width:85px;height:85px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));
+display:flex;align-items:center;justify-content:center;font-size:45px;margin:0 auto 15px;
+box-shadow:0 0 30px rgba(0,200,83,.4)}
+.profile-name{font-size:20px;font-weight:900;margin-bottom:5px}
+.profile-email{font-size:12px;color:var(--text-dim)}
+
+/* Menu List */
+.menu-list{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.menu-item{display:flex;align-items:center;gap:15px;padding:15px;border-bottom:1px solid var(--border);
+cursor:pointer;transition:.2s}
+.menu-item:last-child{border-bottom:none}
+.menu-item:active{background:rgba(0,200,83,.05)}
+.menu-icon{width:40px;height:40px;border-radius:12px;background:rgba(0,200,83,.15);
+display:flex;align-items:center;justify-content:center;font-size:19px}
+.menu-text{flex:1}
+.menu-text h4{font-size:14px;margin-bottom:3px}
+.menu-text span{font-size:11px;color:var(--text-dim)}
+.menu-arrow{color:var(--text-dim);font-size:16px}
+
+/* BMI */
+.calc-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:15px}
+.calc-row{display:flex;gap:10px;margin-bottom:12px}
+.calc-row input{flex:1}
+.bmi-result{text-align:center;padding:20px;border-radius:15px;margin-top:15px;animation:fadeIn .4s}
+.bmi-result.good{background:rgba(0,200,83,.15);border:1px solid rgba(0,200,83,.4)}
+.bmi-result.warn{background:rgba(255,193,7,.15);border:1px solid rgba(255,193,7,.4)}
+.bmi-result.bad{background:rgba(255,23,68,.15);border:1px solid rgba(255,23,68,.4)}
+.bmi-value{font-size:38px;font-weight:900;margin-bottom:5px}
+.bmi-label{font-size:13px;color:var(--text-dim)}
+
+/* Water Tracker */
+.water-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;text-align:center}
+.water-cups{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:15px 0}
+.cup{width:38px;height:48px;border-radius:5px 5px 12px 12px;border:2px solid var(--border);
+cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+.cup.filled{background:linear-gradient(180deg,transparent 0%,#29b6f6 0%);border-color:#29b6f6}
+.cup.filled::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#4fc3f7,#0288d1);
+animation:fill .3s ease}
+@keyframes fill{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1)}}
+
+/* Plans */
+.plans-grid{display:grid;grid-template-columns:1fr;gap:15px}
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:25px;
+text-align:center;transition:.3s;position:relative;overflow:hidden}
+.plan-card.featured{border-color:var(--primary);background:linear-gradient(135deg,rgba(0,200,83,.1),rgba(100,221,23,.04))}
+.plan-card.featured::before{content:'محبوب‌ترین';position:absolute;top:15px;left:-32px;
+background:var(--primary);color:#000;padding:4px 40px;font-size:10px;font-weight:900;transform:rotate(-45deg)}
+.plan-icon{font-size:45px;margin-bottom:12px}
+.plan-name{font-size:20px;font-weight:900;margin-bottom:8px}
+.plan-desc{font-size:12px;color:var(--text-dim);margin-bottom:18px;min-height:36px}
+.plan-price{font-size:30px;font-weight:900;color:var(--accent);margin-bottom:5px}
+.plan-price small{font-size:12px;color:var(--text-dim);font-weight:400}
+.plan-features{list-style:none;text-align:right;margin:18px 0}
+.plan-features li{padding:7px 0;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.plan-features li::before{content:'✓';color:var(--accent);font-weight:900}
+
+/* Toast */
+.toast{position:fixed;bottom:100px;right:20px;left:20px;max-width:400px;margin:0 auto;
+background:var(--primary);color:#000;padding:14px 20px;border-radius:14px;font-weight:700;
+font-size:13px;text-align:center;transform:translateY(150px);transition:.4s;z-index:3000;
+box-shadow:0 10px 30px rgba(0,200,83,.4)}
+.toast.active{transform:translateY(0)}
+.toast.error{background:var(--danger);color:#fff}
+
+/* Loading AI */
+.ai-loading{display:none;flex-direction:column;align-items:center;gap:12px;padding:25px}
+.ai-loading.active{display:flex}
+.spinner{width:45px;height:45px;border:4px solid rgba(0,200,83,.2);border-top-color:var(--primary);
+border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:13px;color:var(--accent);font-weight:600}
+
+/* Meal Plan Week */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:15px}
+.day-col{text-align:center}
+.day-name{font-size:10px;color:var(--text-dim);margin-bottom:5px;font-weight:700}
+.day-slot{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 4px;
+font-size:20px;cursor:pointer;transition:.2s;min-height:45px;display:flex;align-items:center;justify-content:center}
+.day-slot:active{transform:scale(.95)}
+.day-slot.filled{background:rgba(0,200,83,.15);border-color:var(--primary)}
+
+/* Order History */
+.order-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:15px;margin-bottom:10px}
+.order-head{display:flex;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.order-id{font-size:12px;color:var(--text-dim)}
+.order-status{font-size:11px;padding:3px 10px;border-radius:50px;background:rgba(0,200,83,.15);color:var(--accent);font-weight:700}
+.order-items{font-size:12px;color:var(--text-dim);line-height:1.7}
+.order-total{margin-top:10px;font-size:14px;font-weight:800;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loader">
+<div class="loader-logo">🥗</div>
+<div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- Auth -->
+<div id="auth" class="hide">
+<div class="auth-logo">🥗</div>
+<div class="auth-title">هوش تغذیه</div>
+<div class="auth-sub">دستیار هوشمند تغذیه و خرید مواد غذایی</div>
+
+<div class="auth-tabs">
+<button class="auth-tab active" onclick="switchAuth('login',this)">ورود</button>
+<button class="auth-tab" onclick="switchAuth('signup',this)">ثبت‌نام</button>
+</div>
+
+<div class="auth-form" id="authForm">
+<div class="input-group"><span class="icon">👤</span><input type="text" id="authName" placeholder="نام شما" style="display:none"></div>
+<div class="input-group"><span class="icon">📧</span><input type="email" id="authEmail" placeholder="ایمیل"></div>
+<div class="input-group"><span class="icon">🔒</span><input type="password" id="authPass" placeholder="رمز عبور"></div>
+<button class="auth-btn" id="authBtn" onclick="handleAuth()">ورود به حساب</button>
+</div>
+
+<div class="auth-switch" id="authSwitch">حساب نداری؟ <b onclick="switchAuth('signup')">ثبت‌نام کن</b></div>
+</div>
+
+<!-- App -->
+<div id="app">
+
+<!-- Top Bar -->
+<div class="topbar">
+<div class="topbar-left">
+<span class="topbar-logo">🥗</span>
+<span class="topbar-name">هوش تغذیه</span>
+</div>
+<div class="topbar-right">
+<button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+<button class="icon-btn" onclick="openCart()">🛒<span class="badge" id="cartBadge" style="display:none">0</span></button>
+</div>
+</div>
+
+<!-- Page: Home -->
+<div class="page active" id="page-home">
+<div class="hero">
+<div class="hero-greet">👋 سلام، خوش اومدی!</div>
+<div class="hero-name" id="userGreet">کاربر عزیز</div>
+<div class="hero-sub">امروز چقدر به سلامتت اهمیت دادی؟ بیا با هم یه برنامه غذایی عالی بچینیم!</div>
+</div>
+
+<div class="stats-grid">
+<div class="stat-card" onclick="openPage('profile')">
+<div class="stat-icon">🔥</div>
+<div class="stat-val" id="statCal">۰</div>
+<div class="stat-label">کالری امروز</div>
+</div>
+<div class="stat-card" onclick="openPage('profile')">
+<div class="stat-icon">💧</div>
+<div class="stat-val" id="statWater">۰</div>
+<div class="stat-label">لیوان آب</div>
+</div>
+<div class="stat-card" onclick="openPage('profile')">
+<div class="stat-icon">⚖️</div>
+<div class="stat-val" id="statBMI">--</div>
+<div class="stat-label">شاخص BMI</div>
+</div>
+</div>
+
+<div class="sec-head"><div class="sec-title">⚡ دسترسی سریع</div></div>
+<div class="quick-grid">
+<div class="quick-item" onclick="openPage('ai')"><div class="quick-icon">🤖</div><div class="quick-label">دستیار AI</div></div>
+<div class="quick-item" onclick="openPage('recipes')"><div class="quick-icon">📖</div><div class="quick-label">دستور پخت</div></div>
+<div class="quick-item" onclick="openPage('shop')"><div class="quick-icon">🛍️</div><div class="quick-label">فروشگاه</div></div>
+<div class="quick-item" onclick="openPage('plans')"><div class="quick-icon">⭐</div><div class="quick-label">اشتراک</div></div>
+</div>
+
+<div class="sec-head">
+<div class="sec-title">🍽️ پیشنهاد امروز</div>
+<span class="sec-more" onclick="openPage('recipes')">همه →</span>
+</div>
+<div class="card-list" id="homeRecipes"></div>
+</div>
+
+<!-- Page: AI -->
+<div class="page" id="page-ai">
+<div class="sec-head"><div class="sec-title">🤖 دستیار هوش مصنوعی</div></div>
+<div class="ai-box">
+<div class="ai-head">
+<div class="ai-avatar">🤖</div>
+<div class="ai-head-info">
+<h4>نوتری‌بات</h4>
+<span><span class="dot"></span> آنلاین - آماده کمک</span>
+</div>
+</div>
+
+<div id="aiInput">
+<div style="font-size:13px;color:var(--text-dim);margin-bottom:8px">🍎 مواد اولیه‌ای که الان توی خونه داری چیه؟</div>
+<textarea id="fridgeInput" rows="3" placeholder="مثلاً: تخم‌مرغ، گوجه، پیاز، برنج، ماست..."></textarea>
+<div style="font-size:12px;color:var(--text-dim);margin:12px 0 8px">✨ یا سریع انتخاب کن:</div>
+<div class="chips" id="quickChips"></div>
+<button class="btn btn-primary" style="margin-top:15px" onclick="analyzeFridge()">
+<span>🤖</span><span>تحلیل با هوش مصنوعی</span>
+</button>
+</div>
+
+<div class="ai-loading" id="aiLoading">
+<div class="spinner"></div>
+<div class="loading-txt" id="loadingTxt">در حال تحلیل مواد...</div>
+</div>
+
+<div id="aiResult"></div>
+</div>
+</div>
+
+<!-- Page: Recipes -->
+<div class="page" id="page-recipes">
+<div class="sec-head"><div class="sec-title">📖 کتابخانه دستور پخت</div></div>
+<div class="search-box">
+<span class="s-icon">🔍</span>
+<input type="text" id="recipeSearch" placeholder="جستجو در دستور پخت..." oninput="filterRecipes()">
+</div>
+<div class="cats" id="recipeCats"></div>
+<div class="card-list" id="recipesList"></div>
+</div>
+
+<!-- Page: Shop -->
+<div class="page" id="page-shop">
+<div class="sec-head"><div class="sec-title">🛍️ فروشگاه مواد غذایی</div></div>
+<div class="search-box">
+<span class="s-icon">🔍</span>
+<input type="text" id="shopSearch" placeholder="جستجو در محصولات..." oninput="filterShop()">
+</div>
+<div class="cats" id="shopCats"></div>
+<div class="shop-grid" id="shopList"></div>
+</div>
+
+<!-- Page: Plans -->
+<div class="page" id="page-plans">
+<div class="sec-head"><div class="sec-title">⭐ پلن‌های اشتراکی</div></div>
+<div class="plans-grid" id="plansList"></div>
+</div>
+
+<!-- Page: Profile -->
+<div class="page" id="page-profile">
+<div class="profile-head">
+<div class="profile-avatar" id="profileAvatar">👤</div>
+<div class="profile-name" id="profileName">کاربر عزیز</div>
+<div class="profile-email" id="profileEmail">user@email.com</div>
+</div>
+
+<div class="sec-head"><div class="sec-title">⚖️ محاسبه BMI</div></div>
+<div class="calc-box">
+<div class="calc-row">
+<input type="number" id="bmiWeight" placeholder="وزن (kg)">
+<input type="number" id="bmiHeight" placeholder="قد (cm)">
+</div>
+<button class="btn btn-primary" onclick="calcBMI()">محاسبه</button>
+<div id="bmiResult"></div>
+</div>
+
+<div class="sec-head"><div class="sec-title">💧 ردیاب آب</div></div>
+<div class="water-box">
+<div style="font-size:13px;color:var(--text-dim)">هر روز ۸ لیوان آب بنوش!</div>
+<div class="water-cups" id="waterCups"></div>
+<div style="font-size:15px;font-weight:800;color:var(--accent)" id="waterCount">۰ / ۸ لیوان</div>
+</div>
+
+<div class="sec-head"><div class="sec-title">📋 تاریخچه سفارشات</div></div>
+<div id="orderHistory"></div>
+
+<div class="sec-head"><div class="sec-title">⚙️ تنظیمات</div></div>
+<div class="menu-list">
+<div class="menu-item" onclick="toggleTheme()">
+<div class="menu-icon">🌓</div>
+<div class="menu-text"><h4>حالت نمایش</h4><span>تغییر بین حالت شب و روز</span></div>
+<div class="menu-arrow">›</div>
+</div>
+<div class="menu-item" onclick="resetData()">
+<div class="menu-icon">🗑️</div>
+<div class="menu-text"><h4>پاک کردن اطلاعات</h4><span>بازنشانی تمام داده‌ها</span></div>
+<div class="menu-arrow">›</div>
+</div>
+<div class="menu-item" onclick="logout()">
+<div class="menu-icon" style="background:rgba(255,23,68,.15)">🚪</div>
+<div class="menu-text"><h4 style="color:var(--danger)">خروج از حساب</h4><span>بازگشت به صفحه ورود</span></div>
+<div class="menu-arrow">›</div>
+</div>
+</div>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+<div class="nav-item active" data-page="home" onclick="openPage('home')">
+<div class="nav-icon">🏠</div><div class="nav-label">خانه</div>
+</div>
+<div class="nav-item" data-page="ai" onclick="openPage('ai')">
+<div class="nav-icon">🤖</div><div class="nav-label">دستیار</div>
+</div>
+<div class="nav-item" data-page="recipes" onclick="openPage('recipes')">
+<div class="nav-icon">📖</div><div class="nav-label">دستور پخت</div>
+</div>
+<div class="nav-item" data-page="shop" onclick="openPage('shop')">
+<div class="nav-icon">🛍️</div><div class="nav-label">فروشگاه</div>
+</div>
+<div class="nav-item" data-page="profile" onclick="openPage('profile')">
+<div class="nav-icon">👤</div><div class="nav-label">پروفایل</div>
+</div>
+</div>
+</div>
+
+<!-- Cart Modal -->
+<div class="modal" id="cartModal">
+<div class="modal-content">
+<div class="modal-head">
+<h3>🛒 سبد خرید</h3>
+<button class="close-x" onclick="closeCart()">✕</button>
+</div>
+<div id="cartList"></div>
+<div id="cartFooter" style="display:none">
+<div class="total-row"><span>جمع کل:</span><span id="cartTotal">۰ تومان</span></div>
+<button class="btn btn-primary" onclick="checkout()">💳 تکمیل سفارش</button>
+</div>
+</div>
+</div>
+
+<!-- Recipe Detail Modal -->
+<div class="modal" id="recipeModal">
+<div class="modal-content" id="recipeModalContent"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const RECIPES = [
+{id:1,name:'املت گوجه‌فرنگی',icon:'🍳',cat:'صبحانه',time:'۱۵ دقیقه',cal:320,protein:'۱۸گرم',req:['تخم‌مرغ','گوجه','پیاز'],steps:['پیاز رو نگینی خرد کن و توی روغن تفت بده.','گوجه‌ها رو اضافه کن و بذار خوب پخته بشن.','تخم‌مرغ‌ها رو بشکن و به مواد اضافه کن.','با نمک و فلفل مزه‌دار کن و هم بزن.']},
+{id:2,name:'سالاد ماست و خیار',icon:'🥗',cat:'سالاد',time:'۵ دقیقه',cal:150,protein:'۸گرم',req:['ماست','خیار','پیاز'],steps:['خیارها رو نگینی خرد کن.','ماست رو توی کاسه بریز.','خیار و پیاز رو اضافه کن.','با نعنا خشک تزئین کن.']},
+{id:3,name:'مرغ سوخاری خانگی',icon:'🍗',cat:'غذای اصلی',time:'۴۵ دقیقه',cal:520,protein:'۳۵گرم',req:['مرغ','پیاز','ماست'],steps:['مرغ رو با پیاز و ماست مزه‌دار کن.','۲ ساعت توی یخچال استراحت بده.','توی آرد سوخاری بغلتون و سرخ کن.','با سالاد سرو کن.']},
+{id:4,name:'کته ساده با ماست',icon:'🍚',cat:'غذای اصلی',time:'۳۰ دقیقه',cal:380,protein:'۱۰گرم',req:['برنج','ماست'],steps:['برنج رو خوب بشور.','توی آب جوش بریز.','بعد از پخت دم کن.','با ماست سرو کن.']},
+{id:5,name:'سیب‌پز با دارچین',icon:'🍎',cat:'دسر',time:'۲۰ دقیقه',cal:200,protein:'۲گرم',req:['سیب'],steps:['سیب‌ها رو پوست بگیر.','با کمی آب بپز.','دارچین و عسل اضافه کن.','سرد سرو کن.']},
+{id:6,name:'خیارشور خانگی',icon:'🥒',cat:'ترشی',time:'۳ روز',cal:30,protein:'۱گرم',req:['خیار','پیاز'],steps:['خیارها رو بشور.','توی شیشه با آب و نمک بریز.','پیاز اضافه کن.','توی یخچال بذار.']},
+{id:7,name:'آبگوشت ساده',icon:'🍲',cat:'غذای اصلی',time:'۲ ساعت',cal:450,protein:'۲۸گرم',req:['مرغ','پیاز','گوجه'],steps:['همه مواد رو با آب بپز.','بذار جا بیفته.','با نان سرو کن.']},
+{id:8,name:'کوکو سبزی',icon:'🌿',cat:'غذای اصلی',time:'۲۵ دقیقه',cal:280,protein:'۱۲گرم',req:['تخم‌مرغ','پیاز'],steps:['سبزیجات رو خرد کن.','با تخم‌مرغ مخلوط کن.','توی تابه سرخ کن.']},
+{id:9,name:'سالاد فصل',icon:'🥙',cat:'سالاد',time:'۱۰ دقیقه',cal:120,protein:'۴گرم',req:['خیار','گوجه','پیاز'],steps:['همه رو خرد کن.','با آبلیمو مخلوط کن.','سرد سرو کن.']},
+{id:10,name:'املت اسفناج',icon:'🥬',cat:'صبحانه',time:'۱۵ دقیقه',cal:250,protein:'۱۵گرم',req:['تخم‌مرغ','پیاز'],steps:['پیاز رو تفت بده.','اسفناج اضافه کن.','تخم‌مرغ‌ها رو بشکن.']},
+{id:11,name:'پلو مرغ زعفرانی',icon:'🍛',cat:'غذای اصلی',time:'۱ ساعت',cal:580,protein:'۳۲گرم',req:['برنج','مرغ','ماست'],steps:['مرغ رو با زعفران بپز.','برنج رو دم کن.','با ماست سرو کن.']},
+{id:12,name:'ماست و خیار چکیده',icon:'🥛',cat:'پیش غذا',time:'۱۰ دقیقه',cal:170,protein:'۹گرم',req:['ماست','خیار'],steps:['ماست رو چکیده کن.','خیار رنده کن.','مخلوط کن و سرو کن.']}
+];
+
+const PRODUCTS = [
+{id:1,name:'تخم‌مرغ (بسته ۶ عددی)',icon:'🥚',cat:'لبنیات و پروتئین',price:35000},
+{id:2,name:'گوجه‌فرنگی (۱ کیلو)',icon:'🍅',cat:'سبزیجات',price:25000},
+{id:3,name:'پیاز (۱ کیلو)',icon:'🧅',cat:'سبزیجات',price:18000},
+{id:4,name:'برنج ایرانی (۱ کیلو)',icon:'🍚',cat:'غلات',price:85000},
+{id:5,name:'سینه مرغ (۱ کیلو)',icon:'🍗',cat:'لبنیات و پروتئین',price:165000},
+{id:6,name:'ماست پرچرب (۱ کیلو)',icon:'🥛',cat:'لبنیات و پروتئین',price:45000},
+{id:7,name:'خیار (۱ کیلو)',icon:'🥒',cat:'سبزیجات',price:22000},
+{id:8,name:'سیب (۱ کیلو)',icon:'🍎',cat:'میوه',price:40000},
+{id:9,name:'نان سنگک',icon:'🥖',cat:'غلات',price:15000},
+{id:10,name:'پنیر لیقوان',icon:'🧀',cat:'لبنیات و پروتئین',price:120000},
+{id:11,name:'کره حیوانی',icon:'🧈',cat:'لبنیات و پروتئین',price:78000},
+{id:12,name:'عسل طبیعی',icon:'🍯',cat:'غلات',price:250000},
+{id:13,name:'خرما',icon:'🌴',cat:'میوه',price:65000},
+{id:14,name:'گردو',icon:'🌰',cat:'خشکبار',price:180000},
+{id:15,name:'بادام',icon:'🥜',cat:'خشکبار',price:220000},
+{id:16,name:'روغن زیتون',icon:'🫒',cat:'غلات',price:320000}
+];
+
+const PLANS = [
+{id:1,name:'پایه',icon:'🌱',desc:'مناسب برای شروع سبک زندگی سالم',price:'رایگان',period:'',features:['۵ برنامه غذایی در ماه','تحلیل یخچال','سفارش از فروشگاه'],featured:false},
+{id:2,name:'ورزشکاران',icon:'💪',desc:'برنامه‌های پروتئینی برای افزایش عضله',price:'۹۹,۰۰۰',period:'تومان/ماه',features:['برنامه غذایی نامحدود','محاسبه درشت‌مغذی','مشاوره با متخصص','۱۵٪ تخفیف فروشگاه'],featured:true},
+{id:3,name:'بیماران دیابتی',icon:'💊',desc:'کنترل قند خون با برنامه تخصصی',price:'۱۴۹,۰۰۰',period:'تومان/ماه',features:['برنامه زیر نظر پزشک','کنترل شاخص GI','پیگیری هفتگی','۲۰٪ تخفیف فروشگاه'],featured:false},
+{id:4,name:'خانوادگی',icon:'👨‍👩‍👧',desc:'برنامه برای کل اعضای خانواده',price:'۱۹۹,۰۰۰',period:'تومان/ماه',features:['تا ۵ عضو خانواده','برنامه اختصاصی هر فرد','لیست خرید هوشمند','۲۵٪ تخفیف فروشگاه'],featured:false}
+];
+
+// ===== STATE =====
+let state = {
+user:null,
+cart:[],
+orders:[],
+water:0,
+bmi:null,
+theme:'dark',
+favorites:[]
+};
+
+// ===== INIT =====
+window.onload = () => {
+setTimeout(() => {
+document.getElementById('loader').classList.add('hide');
+loadState();
+if(state.user){
+document.getElementById('auth').classList.add('hide');
+document.getElementById('app').classList.add('show');
+initApp();
+}else{
+document.getElementById('auth').classList.remove('hide');
+}
+},2200);
+};
+
+// ===== STORAGE =====
+function saveState(){localStorage.setItem('nutriai_state',JSON.stringify(state))}
+function loadState(){
+const s = localStorage.getItem('nutriai_state');
+if(s){try{state = {...state,...JSON.parse(s)}}catch(e){}}
+if(state.theme==='light')document.body.classList.add('light');
+}
+
+// ===== AUTH =====
+let authMode='login';
+function switchAuth(mode,btn){
+authMode = mode;
+document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+if(btn)btn.classList.add('active');
+else document.querySelectorAll('.auth-tab')[mode==='login'?0:1].classList.add('active');
+document.getElementById('authName').style.display = mode==='signup'?'block':'none';
+document.getElementById('authBtn').innerText = mode==='login'?'ورود به حساب':'ایجاد حساب';
+document.getElementById('authSwitch').innerHTML = mode==='login'
+?'حساب نداری؟ <b onclick="switchAuth(\'signup\')">ثبت‌نام کن</b>'
+:'حساب داری؟ <b onclick="switchAuth(\'login\')">وارد شو</b>';
+}
+function handleAuth(){
+const email = document.getElementById('authEmail').value.trim();
+const pass = document.getElementById('authPass').value.trim();
+const name = document.getElementById('authName').value.trim();
+if(!email || !pass){showToast('لطفاً همه فیلدها را پر کن!',true);return}
+if(!email.includes('@')){showToast('ایمیل معتبر نیست!',true);return}
+if(pass.length<4){showToast('رمز باید حداقل ۴ کاراکتر باشه!',true);return}
+state.user = {name: name || email.split('@')[0], email};
+saveState();
+document.getElementById('auth').classList.add('hide');
+document.getElementById('app').classList.add('show');
+initApp();
+showToast('🎉 خوش آمدی '+state.user.name+'!');
+}
+function logout(){
+if(!confirm('از حساب خارج میشی؟'))return;
+state.user=null;saveState();
+document.getElementById('app').classList.remove('show');
+document.getElementById('auth').classList.remove('hide');
+}
+
+// ===== APP INIT =====
+function initApp(){
+const u = state.user;
+document.getElementById('userGreet').innerText = u.name;
+document.getElementById('profileName').innerText = u.name;
+document.getElementById('profileEmail').innerText = u.email;
+document.getElementById('profileAvatar').innerText = u.name.charAt(0).toUpperCase();
+renderQuickChips();
+renderRecipes();
+renderCats();
+renderShop();
+renderShopCats();
+renderPlans();
+renderHomeRecipes();
+renderWaterCups();
+renderCart();
+renderOrders();
+updateStats();
+}
+
+// ===== NAV =====
+function openPage(p){
+document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+document.getElementById('page-'+p).classList.add('active');
+document.querySelector('.nav-item[data-page="'+p+'"]')?.classList.add('active');
+window.scrollTo({top:0,behavior:'smooth'});
+if(p==='profile'){renderOrders();renderWaterCups();updateStats()}
+}
+
+// ===== THEME =====
+function toggleTheme(){
+state.theme = state.theme==='dark'?'light':'dark';
+document.body.classList.toggle('light');
+document.getElementById('themeBtn').innerText = state.theme==='dark'?'🌙':'☀️';
+saveState();
+showToast(state.theme==='dark'?'🌙 حالت شب فعال شد':'☀️ حالت روز فعال شد');
+}
+
+// ===== AI =====
+function renderQuickChips(){
+const items = ['تخم‌مرغ','گوجه','پیاز','برنج','مرغ','ماست','خیار','سیب','پنیر','نان'];
+document.getElementById('quickChips').innerHTML = items.map(i=>
+`<span class="chip" onclick="addChip('${i}')">${i}</span>`).join('');
+}
+function addChip(t){
+const inp = document.getElementById('fridgeInput');
+inp.value = inp.value.trim()?inp.value+'، '+t:t;
+}
+function analyzeFridge(){
+const inp = document.getElementById('fridgeInput').value.trim();
+if(!inp){showToast('مواد یخچال رو وارد کن!',true);return}
+const ings = inp.split(/[،,]+/).map(i=>i.trim()).filter(i=>i);
+document.getElementById('aiInput').style.display='none';
+document.getElementById('aiLoading').classList.add('active');
+const texts=['در حال تحلیل مواد...','جستجو در دیتابیس دستور پخت...','محاسبه ارزش غذایی...','پیدا کردن فروشگاه نزدیک...','آماده‌سازی برنامه...'];
+let i=0;
+const iv = setInterval(()=>{i=(i+1)%texts.length;document.getElementById('loadingTxt').innerText=texts[i]},700);
+setTimeout(()=>{
+clearInterval(iv);
+document.getElementById('aiLoading').classList.remove('active');
+showAIResult(ings);
+},3500);
+}
+function showAIResult(ings){
+let best=null,bestMatch=-1;
+RECIPES.forEach(r=>{
+const m = r.req.filter(req=>ings.some(ing=>ing.includes(req)||req.includes(ing))).length;
+if(m>bestMatch){bestMatch=m;best=r}
+});
+if(!best||bestMatch===0)best=RECIPES[0];
+const missing = best.req.filter(req=>!ings.some(ing=>ing.includes(req)||req.includes(ing)));
+const prices = {'تخم‌مرغ':35000,'گوجه':25000,'پیاز':18000,'برنج':85000,'مرغ':165000,'ماست':45000,'خیار':22000,'سیب':40000};
+const emojis = {'تخم‌مرغ':'🥚','گوجه':'🍅','پیاز':'🧅','برنج':'🍚','مرغ':'🍗','ماست':'🥛','خیار':'🥒','سیب':'🍎'};
+
+let html = `
+<div class="result-card">
+<div class="result-title">${best.icon} پیشنهاد امروز: ${best.name}</div>
+<div class="result-stats">
+<div class="rstat">⏱️ <b>${best.time}</b></div>
+<div class="rstat">🔥 <b>${best.cal}</b> کالری</div>
+<div class="rstat">💪 <b>${best.protein}</b></div>
+</div>
+<ol class="steps">${best.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+</div>`;
+
+if(missing.length>0){
+html += `<div class="missing-box">
+<div class="missing-title">⚠️ این مواد رو نداری - از فروشگاه سفارش بده:</div>
+${missing.map(m=>`
+<div class="missing-item">
+<div class="missing-info">
+<span class="em">${emojis[m]||'🛒'}</span>
+<div><h5>${m}</h5><span>${(prices[m]||20000).toLocaleString('fa-IR')} تومان</span></div>
+</div>
+<button class="add-btn" onclick='quickAdd(${JSON.stringify(m)},${prices[m]||20000},this)'>➕ افزودن</button>
+</div>`).join('')}
+</div>`;
+}else{
+html += `<div class="missing-box" style="background:rgba(0,200,83,.06);border-color:rgba(0,200,83,.25)">
+<div class="missing-title" style="color:var(--accent)">🎉 تبریک! همه مواد رو داری!</div>
+<p style="color:var(--text-dim);font-size:13px;line-height:1.7">میتونی همین الان این غذا رو بپزی. نوش جان! 😋</p>
+</div>`;
+}
+document.getElementById('aiResult').innerHTML = html;
+}
+function quickAdd(name,price,btn){
+addToCart({id:'q'+Date.now(),name,price,icon:'🛒'});
+btn.innerText = '✓ اضافه شد';
+btn.classList.add('done');
+btn.disabled = true;
+}
+
+// ===== RECIPES =====
+let currentCat = 'همه';
+function renderCats(){
+const cats = ['همه',...new Set(RECIPES.map(r=>r.cat))];
+document.getElementById('recipeCats').innerHTML = cats.map(c=>
+`<div class="cat ${c===currentCat?'active':''}" onclick="filterCat('${c}')">${c}</div>`).join('');
+}
+function filterCat(c){currentCat=c;renderCats();filterRecipes()}
+function filterRecipes(){
+const q = document.getElementById('recipeSearch').value.trim();
+let list = RECIPES;
+if(currentCat!=='همه')list = list.filter(r=>r.cat===currentCat);
+if(q)list = list.filter(r=>r.name.includes(q)||r.req.some(i=>i.includes(q)));
+renderRecipes(list);
+}
+function renderRecipes(list=RECIPES){
+document.getElementById('recipesList').innerHTML = list.map(r=>`
+<div class="recipe-card" onclick="showRecipe(${r.id})">
+<div class="recipe-icon">${r.icon}</div>
+<div class="recipe-info">
+<div class="recipe-name">${r.name}</div>
+<div class="recipe-meta">
+<span>⏱️ ${r.time}</span>
+<span>🔥 ${r.cal}</span>
+<span>💪 ${r.protein}</span>
+</div>
+</div>
+</div>`).join('') || '<div style="text-align:center;padding:30px;color:var(--text-dim)">نتیجه‌ای یافت نشد</div>';
+}
+function renderHomeRecipes(){
+const list = RECIPES.slice(0,4);
+document.getElementById('homeRecipes').innerHTML = list.map(r=>`
+<div class="recipe-card" onclick="showRecipe(${r.id})">
+<div class="recipe-icon">${r.icon}</div>
+<div class="recipe-info">
+<div class="recipe-name">${r.name}</div>
+<div class="recipe-meta"><span>⏱️ ${r.time}</span><span>🔥 ${r.cal}</span></div>
+</div>
+</div>`).join('');
+}
+function showRecipe(id){
+const r = RECIPES.find(x=>x.id===id);
+if(!r)return;
+document.getElementById('recipeModalContent').innerHTML = `
+<div class="modal-head"><h3>${r.icon} ${r.name}</h3><button class="close-x" onclick="closeRecipe()">✕</button></div>
+<div class="result-stats">
+<div class="rstat">⏱️ <b>${r.time}</b></div>
+<div class="rstat">🔥 <b>${r.cal}</b> کالری</div>
+<div class="rstat">💪 <b>${r.protein}</b></div>
+</div>
+<div style="font-size:13px;color:var(--text-dim);margin:15px 0 8px">📝 مواد لازم:</div>
+<div class="chips">${r.req.map(i=>`<span class="chip">${i}</span>`).join('')}</div>
+<div style="font-size:13px;color:var(--text-dim);margin:20px 0 8px">👨‍🍳 مراحل پخت:</div>
+<ol class="steps">${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+`;
+document.getElementById('recipeModal').classList.add('active');
+}
+function closeRecipe(){document.getElementById('recipeModal').classList.remove('active')}
+
+// ===== SHOP =====
+let shopCat = 'همه';
+function renderShopCats(){
+const cats = ['همه',...new Set(PRODUCTS.map(p=>p.cat))];
+document.getElementById('shopCats').innerHTML = cats.map(c=>
+`<div class="cat ${c===shopCat?'active':''}" onclick="filterShopCat('${c}')">${c}</div>`).join('');
+}
+function filterShopCat(c){shopCat=c;renderShopCats();filterShop()}
+function filterShop(){
+const q = document.getElementById('shopSearch').value.trim();
+let list = PRODUCTS;
+if(shopCat!=='همه')list = list.filter(p=>p.cat===shopCat);
+if(q)list = list.filter(p=>p.name.includes(q));
+renderShop(list);
+}
+function renderShop(list=PRODUCTS){
+document.getElementById('shopList').innerHTML = list.map(p=>`
+<div class="shop-card">
+<div class="shop-img">${p.icon}</div>
+<div class="shop-name">${p.name}</div>
+<div class="shop-price">${p.price.toLocaleString('fa-IR')} ت</div>
+<button class="shop-add" onclick="addToCart({id:${p.id},name:'${p.name}',price:${p.price},icon:'${p.icon}'})">➕ افزودن</button>
+</div>`).join('') || '<div style="text-align:center;padding:30px;color:var(--text-dim);grid-column:1/-1">محصولی یافت نشد</div>';
+}
+
+// ===== CART =====
+function addToCart(item){
+const existing = state.cart.find(c=>c.id===item.id);
+if(existing)existing.qty++;
+else state.cart.push({...item,qty:1});
+saveState();renderCart();
+showToast('✅ به سبد اضافه شد');
+}
+function renderCart(){
+const badge = document.getElementById('cartBadge');
+const totalQty = state.cart.reduce((s,i)=>s+i.qty,0);
+if(totalQty>0){badge.style.display='flex';badge.innerText=totalQty}
+else badge.style.display='none';
+
+const list = document.getElementById('cartList');
+const footer = document.getElementById('cartFooter');
+if(state.cart.length===0){
+list.innerHTML = '<div class="empty-cart"><div class="e-icon">🛒</div><p>سبد خریدت خالیه!</p></div>';
+footer.style.display='none';return;
+}
+list.innerHTML = state.cart.map((i,idx)=>`
+<div class="cart-item">
+<div class="cart-info">
+<span class="em">${i.icon||'🛒'}</span>
+<div><h5>${i.name}</h5><span>${(i.price*i.qty).toLocaleString('fa-IR')} ت</span></div>
+</div>
+<div class="qty-ctrl">
+<button class="qty-btn" onclick="changeQty(${idx},-1)">−</button>
+<span class="qty-num">${i.qty}</span>
+<button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
+</div>
+</div>`).join('');
+const total = state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+document.getElementById('cartTotal').innerText = total.toLocaleString('fa-IR')+' تومان';
+footer.style.display='block';
+}
+function changeQty(i,d){
+state.cart[i].qty += d;
+if(state.cart[i].qty<=0)state.cart.splice(i,1);
+saveState();renderCart();
+}
+function openCart(){document.getElementById('cartModal').classList.add('active');renderCart()}
+function closeCart(){document.getElementById('cartModal').classList.remove('active')}
+function checkout(){
+if(state.cart.length===0)return;
+const total = state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+const order = {
+id:'ORD'+Date.now().toString().slice(-6),
+date:new Date().toLocaleDateString('fa-IR'),
+items:state.cart.map(i=>({name:i.name,qty:i.qty,price:i.price,icon:i.icon})),
+total,
+status:'در حال آماده‌سازی'
+};
+state.orders.unshift(order);
+state.cart = [];
+saveState();
+renderCart();renderOrders();
+closeCart();
+showToast('🎉 سفارش با موفقیت ثبت شد!');
+}
+function renderOrders(){
+const el = document.getElementById('orderHistory');
+if(!state.orders||state.orders.length===0){
+el.innerHTML = '<div style="text-align:center;padding:25px;color:var(--text-dim);font-size:13px">هنوز سفارشی ثبت نکردی</div>';
+return;
+}
+el.innerHTML = state.orders.map(o=>`
+<div class="order-card">
+<div class="order-head">
+<span class="order-id">#${o.id} • ${o.date}</span>
+<span class="order-status">${o.status}</span>
+</div>
+<div class="order-items">${o.items.map(i=>`${i.icon||'🛒'} ${i.name} × ${i.qty}`).join(' • ')}</div>
+<div class="order-total">جمع: ${o.total.toLocaleString('fa-IR')} تومان</div>
+</div>`).join('');
+}
+
+// ===== PLANS =====
+function renderPlans(){
+document.getElementById('plansList').innerHTML = PLANS.map(p=>`
+<div class="plan-card ${p.featured?'featured':''}">
+<div class="plan-icon">${p.icon}</div>
+<div class="plan-name">${p.name}</div>
+<div class="plan-desc">${p.desc}</div>
+<div class="plan-price">${p.price} <small>${p.period}</small></div>
+<ul class="plan-features">${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+<button class="btn btn-primary" onclick="selectPlan(${p.id})">انتخاب پلن</button>
+</div>`).join('');
+}
+function selectPlan(id){
+const p = PLANS.find(x=>x.id===id);
+showToast(`🎉 پلن ${p.name} انتخاب شد!`);
+}
+
+// ===== BMI =====
+function calcBMI(){
+const w = parseFloat(document.getElementById('bmiWeight').value);
+const h = parseFloat(document.getElementById('bmiHeight').value)/100;
+if(!w||!h){showToast('وزن و قد رو وارد کن!',true);return}
+const bmi = (w/(h*h)).toFixed(1);
+state.bmi = bmi;saveState();updateStats();
+let label,cls;
+if(bmi<18.5){label='کمبود وزن';cls='warn'}
+else if(bmi<25){label='وزن نرمال ✓';cls='good'}
+else if(bmi<30){label='اضافه وزن';cls='warn'}
+else{label='چاقی';cls='bad'}
+document.getElementById('bmiResult').innerHTML = `
+<div class="bmi-result ${cls}">
+<div class="bmi-value">${parseFloat(bmi).toLocaleString('fa-IR')}</div>
+<div class="bmi-label">${label}</div>
+</div>`;
+}
+
+// ===== WATER =====
+function renderWaterCups(){
+const el = document.getElementById('waterCups');
+if(!el)return;
+let html = '';
+for(let i=0;i<8;i++){
+html += `<div class="cup ${i<state.water?'filled':''}" onclick="toggleWater(${i})"></div>`;
+}
+el.innerHTML = html;
+document.getElementById('waterCount').innerText = state.water.toLocaleString('fa-IR')+' / ۸ لیوان';
+}
+function toggleWater(i){
+state.water = i+1;
+if(i+1>state.water)state.water=i;
+saveState();renderWaterCups();updateStats();
+showToast(`💧 ${state.water} لیوان آب`);
+}
+
+// ===== STATS =====
+function updateStats(){
+document.getElementById('statCal').innerText = (state.orders?.length? '—':'۰');
+document.getElementById('statWater').innerText = state.water.toLocaleString('fa-IR');
+document.getElementById('statBMI').innerText = state.bmi?parseFloat(state.bmi).toLocaleString('fa-IR'):'--';
+}
+
+// ===== UTIL =====
+function showToast(msg,err=false){
+const t = document.getElementById('toast');
+t.innerText = msg;
+t.classList.toggle('error',err);
+t.classList.add('active');
+setTimeout(()=>t.classList.remove('active'),2500);
+}
+function resetData(){
+if(!confirm('همه اطلاعات پاک بشه؟'))return;
+localStorage.removeItem('nutriai_state');
+location.reload();
+}
+
+// Close modals on backdrop click
+document.getElementById('cartModal').addEventListener('click',e=>{if(e.target.id==='cartModal')closeCart()});
+document.getElementById('recipeModal').addEventListener('click',e=>{if(e.target.id==='recipeModal')closeRecipe()});
+
+// Set theme button initial
+setTimeout(()=>{
+document.getElementById('themeBtn').innerText = state.theme==='dark'?'🌙':'☀️';
+},100);
+</script>
+</body>
+</html>
