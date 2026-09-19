@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>آشپزخونه گوگولی | NutriAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Vazirmatn',sans-serif;-webkit-tap-highlight-color:transparent}
+:root{--pink:#ff6b9d;--pink-dark:#c9184a;--yellow:#ffd93d;--mint:#6bcf7f;--sky:#4dabf7;--purple:#b197fc;--orange:#ff922b;--bg:#fff9f0;--card:#fff;--text:#2b2b3d;--dim:#7a7a8c;--shadow:0 4px 20px rgba(0,0,0,.06);--nav:rgba(255,249,240,.95)}
+body.night{--bg:#1a1626;--card:#251f38;--text:#f5f0ff;--dim:#a89ec4;--shadow:0 4px 20px rgba(0,0,0,.3);--nav:rgba(26,22,38,.95)}
+body{background:var(--bg);color:var(--text);transition:.4s;min-height:100vh;overflow-x:hidden;padding-bottom:90px}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 10% 5%,rgba(255,107,157,.15),transparent 35%),radial-gradient(circle at 90% 15%,rgba(255,217,61,.12),transparent 35%),radial-gradient(circle at 50% 90%,rgba(107,207,127,.12),transparent 40%)}
+
+#loader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:.5s}
+#loader.hide{opacity:0;pointer-events:none}
+.loader-art{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center}
+.loader-pot{font-size:70px;animation:bounce 1.2s infinite}
+.loader-steam{position:absolute;top:-10px;font-size:24px;opacity:.6;animation:steam 1.5s infinite}
+.loader-steam:nth-child(2){animation-delay:.3s;margin-right:-30px}
+.loader-steam:nth-child(3){animation-delay:.6s;margin-left:-30px}
+@keyframes bounce{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+@keyframes steam{0%{transform:translateY(0);opacity:0}50%{opacity:.7}100%{transform:translateY(-30px);opacity:0}}
+.loader-txt{font-size:16px;font-weight:800;color:var(--pink);letter-spacing:1px}
+
+.topbar{position:sticky;top:0;background:var(--nav);backdrop-filter:blur(20px);z-index:100;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.05)}
+body.night .topbar{border-bottom-color:rgba(255,255,255,.05)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-art{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--yellow));display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(255,107,157,.4);animation:wiggle 3s infinite}
+@keyframes wiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.logo-name{font-weight:900;font-size:17px;background:linear-gradient(135deg,var(--pink),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topbar-btns{display:flex;gap:8px}
+.icon-btn{width:40px;height:40px;border-radius:14px;background:var(--card);border:none;box-shadow:var(--shadow);font-size:18px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
+.icon-btn:active{transform:scale(.9)}
+
+.hero{margin:16px;padding:22px;border-radius:26px;background:linear-gradient(135deg,#ffe0ec,#fff4d6);position:relative;overflow:hidden}
+body.night .hero{background:linear-gradient(135deg,#3a2440,#3a3420)}
+.hero-title{font-size:22px;font-weight:900;margin-bottom:6px;color:var(--text)}
+.hero-sub{font-size:13px;color:var(--dim);line-height:1.7;position:relative;z-index:2;max-width:65%}
+.hero-emojis{position:absolute;left:10px;bottom:-8px;font-size:60px;opacity:.9;transform:rotate(-10deg)}
+.hero-emojis span{display:inline-block;animation:float 3s infinite}
+.hero-emojis span:nth-child(2){animation-delay:.5s;margin-right:-15px}
+.hero-emojis span:nth-child(3){animation-delay:1s}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(8deg)}}
+
+.cats{display:flex;gap:10px;padding:0 16px 16px;overflow-x:auto;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex-shrink:0;padding:10px 18px;border-radius:50px;background:var(--card);border:none;box-shadow:var(--shadow);font-family:inherit;font-size:13px;font-weight:700;color:var(--dim);cursor:pointer;transition:.3s;display:flex;align-items:center;gap:6px}
+.cat.active{background:linear-gradient(135deg,var(--pink),var(--orange));color:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,107,157,.35)}
+.cat .cat-em{font-size:16px}
+
+.search-wrap{padding:0 16px 16px}
+.search-box{position:relative}
+.search-box input{width:100%;padding:14px 45px 14px 18px;border-radius:18px;border:none;background:var(--card);box-shadow:var(--shadow);font-family:inherit;font-size:14px;color:var(--text);outline:none}
+.search-box .s-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px;opacity:.5}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 16px 20px}
+.recipe{cursor:pointer;border-radius:24px;background:var(--card);box-shadow:var(--shadow);overflow:hidden;transition:.3s;animation:fadeIn .5s}
+.recipe:active{transform:scale(.96)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.recipe-art{height:110px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.recipe-emoji{font-size:56px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.15));z-index:2;animation:float 4s infinite}
+.recipe-body{padding:12px 12px 14px}
+.recipe-name{font-size:13px;font-weight:800;margin-bottom:6px;line-height:1.4;min-height:34px}
+.recipe-meta{display:flex;gap:8px;font-size:10px;color:var(--dim);flex-wrap:wrap}
+.recipe-meta span{display:flex;align-items:center;gap:3px;background:rgba(255,107,157,.08);padding:3px 8px;border-radius:8px;font-weight:700}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:2000;display:none;align-items:flex-end;justify-content:center;animation:fadeIn .3s}
+.modal.active{display:flex}
+.modal-inner{background:var(--bg);width:100%;max-width:600px;max-height:92vh;overflow-y:auto;border-radius:28px 28px 0 0;padding:0 0 30px;animation:slideUp .4s;position:relative}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-hero{position:relative;height:180px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.modal-hero .big-emoji{font-size:100px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.2));z-index:2;animation:float 4s infinite}
+.close-btn{position:absolute;top:16px;left:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.9);border:none;font-size:18px;font-weight:900;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;color:var(--pink-dark)}
+.modal-content{padding:0 20px}
+.recipe-title{font-size:22px;font-weight:900;margin-bottom:8px}
+.recipe-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.stat-chip{background:var(--card);padding:8px 14px;border-radius:14px;font-size:11px;font-weight:700;box-shadow:var(--shadow);display:flex;align-items:center;gap:5px}
+.stat-chip b{color:var(--pink)}
+.section-title{font-size:16px;font-weight:800;margin:20px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:5px;height:20px;border-radius:5px;background:linear-gradient(180deg,var(--pink),var(--yellow))}
+.ing-list{display:flex;flex-direction:column;gap:8px}
+.ing{display:flex;align-items:center;justify-content:space-between;background:var(--card);padding:12px 15px;border-radius:16px;box-shadow:var(--shadow);font-size:13px}
+.ing-left{display:flex;align-items:center;gap:10px;font-weight:700}
+.ing-em{font-size:22px}
+.ing-amount{font-weight:800;color:var(--pink);background:rgba(255,107,157,.1);padding:3px 10px;border-radius:8px;font-size:12px}
+
+.steps-list{display:flex;flex-direction:column;gap:14px}
+.step{background:var(--card);border-radius:22px;padding:16px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start;animation:fadeIn .5s}
+.step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--orange));color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(255,107,157,.3)}
+.step-body{flex:1;min-width:0}
+.step-text{font-size:13px;line-height:1.8;font-weight:500}
+.step-art{margin-top:10px;height:70px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:34px;position:relative;overflow:hidden}
+.step-art span{position:relative;z-index:2;filter:drop-shadow(0 3px 6px rgba(0,0,0,.12))}
+.step-art .arrow{font-size:20px;opacity:.5}
+.art-1{background:linear-gradient(135deg,#ffe5b4,#ffd1a4)}
+.art-2{background:linear-gradient(135deg,#d4f1d4,#b8e6c1)}
+.art-3{background:linear-gradient(135deg,#ffd6e0,#ffb8c9)}
+.art-4{background:linear-gradient(135deg,#fff2b8,#ffe89d)}
+.art-5{background:linear-gradient(135deg,#d6e8ff,#b8d4ff)}
+.art-6{background:linear-gradient(135deg,#e8d6ff,#d4b8ff)}
+
+.tips-box{margin-top:20px;background:linear-gradient(135deg,#fff4d6,#ffe6cc);padding:16px;border-radius:20px;border:2px dashed #ffb74d}
+body.night .tips-box{background:linear-gradient(135deg,#3a3020,#3a2828)}
+.tips-title{font-size:14px;font-weight:800;color:var(--orange);margin-bottom:8px}
+.tips-text{font-size:12px;line-height:1.9}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--nav);backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.05);padding:8px 5px 14px;display:flex;justify-content:space-around;z-index:500}
+body.night .bnav{border-top-color:rgba(255,255,255,.05)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;cursor:pointer;color:var(--dim);transition:.3s;border-radius:16px;background:none;border:none;font-family:inherit}
+.nav-item.active{color:var(--pink)}
+.nav-em{font-size:22px;transition:.3s}
+.nav-item.active .nav-em{transform:translateY(-4px) scale(1.15)}
+.nav-lb{font-size:10px;font-weight:800}
+
+.toast{position:fixed;bottom:100px;right:20px;left:20px;max-width:400px;margin:0 auto;background:linear-gradient(135deg,var(--pink),var(--orange));color:#fff;padding:14px 20px;border-radius:16px;font-weight:700;font-size:13px;text-align:center;transform:translateY(150px);transition:.4s;z-index:3000;box-shadow:0 10px 30px rgba(255,107,157,.4)}
+.toast.active{transform:translateY(0)}
+
+.empty{text-align:center;padding:50px 20px;color:var(--dim)}
+.empty-em{font-size:70px;margin-bottom:15px;opacity:.6}
+.empty-txt{font-size:14px;font-weight:600}
+
+.ex-grid{display:grid;grid-template-columns:1fr;gap:14px;padding:0 16px 20px}
+.ex-card{background:var(--card);border-radius:24px;box-shadow:var(--shadow);padding:18px;cursor:pointer;transition:.3s;animation:fadeIn .5s}
+.ex-card:active{transform:scale(.98)}
+.ex-head{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.ex-icon{width:60px;height:60px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.ex-icon.c1{background:linear-gradient(135deg,#ffb8c9,#ff8fab)}
+.ex-icon.c2{background:linear-gradient(135deg,#b8e6c1,#7dd89a)}
+.ex-icon.c3{background:linear-gradient(135deg,#ffd1a4,#ffb870)}
+.ex-icon.c4{background:linear-gradient(135deg,#b8d4ff,#7fb3ff)}
+.ex-icon.c5{background:linear-gradient(135deg,#d4b8ff,#b197fc)}
+.ex-icon.c6{background:linear-gradient(135deg,#ffd6b8,#ffb088)}
+.ex-title h4{font-size:15px;font-weight:800;margin-bottom:4px}
+.ex-title span{font-size:11px;color:var(--dim);font-weight:600}
+.ex-desc{font-size:12px;color:var(--dim);line-height:1.8;margin-bottom:12px}
+.ex-tags{display:flex;gap:6px;flex-wrap:wrap}
+.ex-tag{font-size:10px;padding:4px 10px;border-radius:50px;background:rgba(255,107,157,.12);color:var(--pink);font-weight:800}
+
+.day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:15px 0}
+.day-cell{background:var(--card);border:2px solid transparent;border-radius:14px;padding:12px 5px;text-align:center;cursor:pointer;transition:.2s;box-shadow:var(--shadow)}
+.day-cell:active{transform:scale(.9)}
+.day-cell.done{background:linear-gradient(135deg,var(--mint),#4caf50);border-color:var(--mint)}
+.day-cell.done .day-num{color:#fff}
+.day-cell.done .day-lbl{color:rgba(255,255,255,.9)}
+.day-num{font-size:15px;font-weight:900;color:var(--pink)}
+.day-lbl{font-size:9px;color:var(--dim);margin-top:3px;font-weight:700}
+
+.massage-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 20px}
+.massage-card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:14px;cursor:pointer;transition:.3s;text-align:center;animation:fadeIn .5s}
+.massage-card:active{transform:scale(.95)}
+.massage-icon-wrap{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 10px;position:relative}
+.massage-icon-wrap::before{content:'';position:absolute;inset:-4px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--yellow));opacity:.2}
+.massage-icon-wrap span{position:relative;z-index:2}
+.massage-card h4{font-size:12px;font-weight:800;margin-bottom:4px;line-height:1.4}
+.massage-card .m-time{font-size:10px;color:var(--dim);font-weight:700}
+.mc-1{background:linear-gradient(135deg,#ffd6e0,#ffb8c9)}
+.mc-2{background:linear-gradient(135deg,#d6e8ff,#b8d4ff)}
+.mc-3{background:linear-gradient(135deg,#fff2b8,#ffe89d)}
+.mc-4{background:linear-gradient(135deg,#e8d6ff,#d4b8ff)}
+.mc-5{background:linear-gradient(135deg,#d4f1d4,#b8e6c1)}
+.mc-6{background:linear-gradient(135deg,#ffe5b4,#ffd1a4)}
+
+.page{display:none}
+.page.active{display:block;animation:fadeIn .4s}
+.section-head-main{font-size:17px;font-weight:900;margin:20px 16px 12px;display:flex;align-items:center;gap:8px;color:var(--text)}
+
+.calc-box{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:18px;margin:0 16px 16px}
+.calc-row{display:flex;gap:10px;margin-bottom:12px}
+.calc-row input{flex:1;padding:14px;border-radius:14px;border:2px solid transparent;background:rgba(255,107,157,.06);font-family:inherit;font-size:14px;color:var(--text);outline:none}
+.calc-row input:focus{border-color:var(--pink)}
+.btn-main{width:100%;padding:15px;border-radius:16px;border:none;background:linear-gradient(135deg,var(--pink),var(--orange));color:#fff;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;transition:.3s;box-shadow:0 6px 20px rgba(255,107,157,.3)}
+.btn-main:active{transform:scale(.97)}
+.btn-main:disabled{opacity:.6}
+.bmi-result{text-align:center;padding:20px;border-radius:18px;margin-top:15px;animation:fadeIn .4s}
+.bmi-result.good{background:linear-gradient(135deg,#d4f1d4,#b8e6c1)}
+.bmi-result.warn{background:linear-gradient(135deg,#fff2b8,#ffe89d)}
+.bmi-result.bad{background:linear-gradient(135deg,#ffd6e0,#ffb8c9)}
+.bmi-value{font-size:38px;font-weight:900;margin-bottom:5px;color:var(--text)}
+.bmi-label{font-size:14px;font-weight:800;color:var(--text)}
+.bmi-rec{margin-top:12px;padding:12px;background:rgba(255,255,255,.5);border-radius:12px;font-size:12px;line-height:1.8;color:#2b2b3d;font-weight:600}
+
+.water-box{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:20px;margin:0 16px 16px;text-align:center}
+.water-cups{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:15px 0}
+.cup{width:36px;height:46px;border-radius:5px 5px 14px 14px;border:2px solid rgba(255,107,157,.3);cursor:pointer;transition:.3s;background:rgba(255,107,157,.05)}
+.cup.filled{background:linear-gradient(180deg,#4dabf7,#1e88e5);border-color:#1e88e5;box-shadow:0 4px 12px rgba(30,136,229,.4)}
+
+.profile-head{text-align:center;padding:25px;background:linear-gradient(135deg,#ffe0ec,#fff4d6);border-radius:26px;margin:16px}
+body.night .profile-head{background:linear-gradient(135deg,#3a2440,#3a3420)}
+.profile-avatar{width:85px;height:85px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--yellow));display:flex;align-items:center;justify-content:center;font-size:42px;margin:0 auto 15px;box-shadow:0 8px 24px rgba(255,107,157,.4)}
+.profile-name{font-size:20px;font-weight:900;margin-bottom:5px}
+.profile-email{font-size:12px;color:var(--dim)}
+
+.ai-box{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:20px;margin:0 16px 16px}
+.ai-box textarea{width:100%;padding:14px;border-radius:14px;border:2px solid transparent;background:rgba(255,107,157,.06);font-family:inherit;font-size:14px;color:var(--text);outline:none;resize:none}
+.ai-box textarea:focus{border-color:var(--pink)}
+.ai-result-card{background:var(--card);padding:18px;border-radius:20px;box-shadow:var(--shadow);margin:16px;animation:fadeIn .4s}
+.ai-result-title{font-weight:900;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ai-result-text{font-size:14px;line-height:2;white-space:pre-wrap}
+.ai-loading{text-align:center;padding:25px}
+.ai-loading .ai-emoji{font-size:60px;animation:bounce 1s infinite}
+.ai-loading .ai-txt{color:var(--pink);font-weight:800;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-art">
+    <span class="loader-steam">💨</span>
+    <span class="loader-pot">🍲</span>
+    <span class="loader-steam">💨</span>
+  </div>
+  <div class="loader-txt">آشپزخونه گوگولی</div>
+</div>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-art">🍳</div>
+    <div class="logo-name">آشپزخونه گوگولی</div>
+  </div>
+  <div class="topbar-btns">
+    <button class="icon-btn" onclick="toggleNight()" id="nightBtn">🌙</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-title">سلام، آشپز کوچولو! 👋</div>
+    <div class="hero-sub">دستورهای ساده، ورزش، ماساژ و دستیار هوشمند — همه با هم!</div>
+    <div class="hero-emojis"><span>🥗</span><span>🍜</span><span>🍰</span></div>
+  </div>
+  <div class="section-head-main">🍽️ دستور پخت</div>
+  <div class="cats" id="cats"></div>
+  <div class="search-wrap">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="دنبال چی می‌گردی؟..." oninput="filterRecipes()">
+      <span class="s-icon">🔍</span>
+    </div>
+  </div>
+  <div class="grid" id="recipeGrid"></div>
+</div>
+
+<!-- AI PAGE -->
+<div class="page" id="page-ai">
+  <div class="hero" style="background:linear-gradient(135deg,#d6e8ff,#e8d6ff)">
+    <div class="hero-title">دستیار هوشمند 🤖</div>
+    <div class="hero-sub">هر چی دوست داری بپرس — غذا، ورزش، ماساژ، سلامتی!</div>
+    <div class="hero-emojis"><span>🤖</span><span>✨</span><span>💬</span></div>
+  </div>
+  <div class="ai-box">
+    <textarea id="aiInput" rows="3" placeholder="مثلاً: برای شام چی بپزم؟ یا: چطور قوز کمرم رو درست کنم؟"></textarea>
+    <button class="btn-main" style="margin-top:12px" onclick="askAI()" id="aiBtn">🤖 بپرس از هوش مصنوعی</button>
+  </div>
+  <div id="aiLoading" class="ai-loading" style="display:none">
+    <div class="ai-emoji">🤖</div>
+    <div class="ai-txt">داره فکر می‌کنه...</div>
+  </div>
+  <div id="aiResult"></div>
+</div>
+
+<!-- EXERCISE -->
+<div class="page" id="page-exercise">
+  <div class="hero" style="background:linear-gradient(135deg,#d4f1d4,#fff2b8)">
+    <div class="hero-title">ورزش‌های ۳۰ روزه 💪</div>
+    <div class="hero-sub">روتین‌های ساده و مؤثر — بدون تجهیزات!</div>
+    <div class="hero-emojis"><span>💪</span><span>🤸</span><span>🧘</span></div>
+  </div>
+  <div class="ex-grid" id="exGrid"></div>
+</div>
+
+<!-- MASSAGE -->
+<div class="page" id="page-massage">
+  <div class="hero" style="background:linear-gradient(135deg,#e8d6ff,#ffd6e0)">
+    <div class="hero-title">ماساژ صورت 💆‍♀️</div>
+    <div class="hero-sub">۳۰ تکنیک جوان‌سازی، لیفت و آرامش</div>
+    <div class="hero-emojis"><span>💆</span><span>✨</span><span>🌸</span></div>
+  </div>
+  <div class="massage-grid" id="massageGrid"></div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div class="profile-head">
+    <div class="profile-avatar">🌸</div>
+    <div class="profile-name">آشپز کوچولو</div>
+    <div class="profile-email">سلامت تو، اولویت ماست</div>
+  </div>
+  <div class="section-head-main">⚖️ محاسبه BMI</div>
+  <div class="calc-box">
+    <div class="calc-row">
+      <input type="number" id="bmiWeight" placeholder="وزن (kg)">
+      <input type="number" id="bmiHeight" placeholder="قد (cm)">
+    </div>
+    <button class="btn-main" onclick="calcBMI()">محاسبه کن</button>
+    <div id="bmiResult"></div>
+  </div>
+  <div class="section-head-main">💧 ردیاب آب</div>
+  <div class="water-box">
+    <div style="font-size:13px;color:var(--dim);font-weight:600">هر روز ۸ لیوان آب بنوش</div>
+    <div class="water-cups" id="waterCups"></div>
+    <div style="font-size:16px;font-weight:900;color:var(--pink)" id="waterCount">۰ از ۸</div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <button class="nav-item active" onclick="openPage('home',this)">
+    <span class="nav-em">🏠</span><span class="nav-lb">خانه</span>
+  </button>
+  <button class="nav-item" onclick="openPage('ai',this)">
+    <span class="nav-em">🤖</span><span class="nav-lb">دستیار</span>
+  </button>
+  <button class="nav-item" onclick="openPage('exercise',this)">
+    <span class="nav-em">💪</span><span class="nav-lb">ورزش</span>
+  </button>
+  <button class="nav-item" onclick="openPage('massage',this)">
+    <span class="nav-em">💆</span><span class="nav-lb">ماساژ</span>
+  </button>
+  <button class="nav-item" onclick="openPage('profile',this)">
+    <span class="nav-em">👤</span><span class="nav-lb">پروفایل</span>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-inner" id="modalInner"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== RECIPES ====================
+const RECIPES = [
+{id:1,name:'کیمچی استو',cat:'korean',emoji:'🍲',time:'۳۰ دق',cal:۲۸۰,protein:'۱۸گرم',
+ing:[{em:'🥬',n:'کیمچی',g:'۳۰۰ گرم'},{em:'🍢',n:'توفو',g:'۲۰۰ گرم'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🧄',n:'سیر',g:'۳ حبه'},{em:'🌶️',n:'پودر فلفل',g:'۱ قاشق'},{em:'🥄',n:'روغن کنجد',g:'۱ قاشق'}],
+steps:[{t:'کیمچی رو به قطعات ۳ سانتی برش بزن.',art:['🔪','🥬','➡️','🥬🥬'],cls:'art-3'},{t:'توی قابلمه روغن بریز و پیاز خرد شده رو ۲ دقیقه تفت بده.',art:['🫕','🔥','🧅','💨'],cls:'art-1'},{t:'سیر رنده شده رو اضافه کن و ۳۰ ثانیه هم بزن.',art:['🧄','🥄','🫕'],cls:'art-4'},{t:'کیمچی رو اضافه کن و ۵ دقیقه تفت بده.',art:['🥬','🔥','🫕','💨'],cls:'art-3'},{t:'۲ لیوان آب جوش بریز و ۱۵ دقیقه بپز.',art:['💧','💧','🫕','⏱️'],cls:'art-5'},{t:'توفو رو مکعبی خرد کن و اضافه کن، ۵ دقیقه بپز.',art:['🔪','🍢','➡️','🫕'],cls:'art-6'},{t:'با پیاز سبز تزئین کن.',art:['🌿','🍚','🍲','✨'],cls:'art-2'}],tip:'برای طعم بهتر، ۱ قاشق سس سویا اضافه کن.'},
+{id:2,name:'بی‌بیم‌باپ',cat:'korean',emoji:'🍚',time:'۲۵ دق',cal:۴۵۰,protein:'۲۲گرم',
+ing:[{em:'🍚',n:'برنج',g:'۲ پیمانه'},{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🥕',n:'هویج',g:'۱ عدد'},{em:'🥬',n:'اسفناج',g:'۱۰۰ گرم'},{em:'🌱',n:'جوانه',g:'۵۰ گرم'},{em:'🥄',n:'سس سویا',g:'۳ قاشق'}],
+steps:[{t:'برنج رو از قبل بپز و توی کاسه بذار.',art:['🍚','🍚','🥣','⏱️'],cls:'art-4'},{t:'هویج رو خلالی خرد کن و ۳ دقیقه تفت بده.',art:['🔪','🥕','🫕','🔥'],cls:'art-1'},{t:'اسفناج رو ۲ دقیقه تفت بده.',art:['🥬','🫕','🔥'],cls:'art-2'},{t:'تخم‌مرغ رو نیم‌پز سرخ کن.',art:['🥚','🍳','🔥','⏱️'],cls:'art-4'},{t:'سبزیجات رو روی برنج بچین.',art:['🥕','🥬','🌱','🍚'],cls:'art-2'},{t:'تخم‌مرغ وسط و سس سویا اضافه کن.',art:['🥚','🍚','🥄','✨'],cls:'art-3'}],tip:'سبزیجات رو جدا تفت بده.'},
+{id:3,name:'جاپ‌چه',cat:'korean',emoji:'🍜',time:'۳۰ دق',cal:۳۸۰,protein:'۲۰گرم',
+ing:[{em:'🍜',n:'نودل شیشه‌ای',g:'۲۰۰ گرم'},{em:'🥩',n:'گوشت گاو',g:'۱۵۰ گرم'},{em:'🥬',n:'اسفناج',g:'۱۰۰ گرم'},{em:'🥕',n:'هویج',g:'۱ عدد'},{em:'🥄',n:'سس سویا',g:'۴ قاشق'},{em:'🌰',n:'کنجد',g:'۱ قاشق'}],
+steps:[{t:'نودل رو ۵ دقیقه بپز و آبکش کن.',art:['🍜','💧','🔥','⏱️'],cls:'art-5'},{t:'گوشت رو با سس سویا مزه‌دار کن و تفت بده.',art:['🥩','🥄','🫕','🔥'],cls:'art-1'},{t:'هویج و اسفناج رو جدا تفت بده.',art:['🥕','🥬','🫕'],cls:'art-2'},{t:'همه رو با نودل مخلوط کن.',art:['🍜','🥩','🥕','🥬'],cls:'art-3'},{t:'با کنجد تزئین کن.',art:['🌰','✨','🍜'],cls:'art-6'}],tip:'نودل رو زیاد نپز.'},
+{id:4,name:'کیم‌بپ',cat:'korean',emoji:'🍙',time:'۲۵ دق',cal:۳۲۰,protein:'۱۲گرم',
+ing:[{em:'🍚',n:'برنج',g:'۲ پیمانه'},{em:'🌿',n:'ورقه نوری',g:'۴ عدد'},{em:'🥕',n:'هویج',g:'۱ عدد'},{em:'🥒',n:'خیار',g:'۱ عدد'},{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🥄',n:'روغن کنجد',g:'۱ قاشق'}],
+steps:[{t:'برنج رو با روغن کنجد مخلوط کن.',art:['🍚','🥄','🥣'],cls:'art-4'},{t:'تخم‌مرغ رو نوار باریک سرخ کن.',art:['🥚','🍳','🔪'],cls:'art-4'},{t:'هویج و خیار رو خلالی خرد کن.',art:['🥕','🥒','🔪'],cls:'art-2'},{t:'ورقه نوری رو پهن کن و برنج بریز.',art:['🌿','➡️','🍚'],cls:'art-2'},{t:'مواد رو وسط بچین و رول کن.',art:['🥕','🥚','🥒','🌀'],cls:'art-1'},{t:'با چاقو برش بزن.',art:['🔪','🍙🍙🍙'],cls:'art-3'}],tip:'از حصیر بامبو استفاده کن.'},
+{id:5,name:'ساندویچ کره‌ای',cat:'korean',emoji:'🥪',time:'۱۵ دق',cal:۲۹۰,protein:'۱۵گرم',
+ing:[{em:'🍞',n:'نان تست',g:'۴ برش'},{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🥬',n:'کلم',g:'۱۰۰ گرم'},{em:'🥕',n:'هویج',g:'۱ عدد'},{em:'🧀',n:'پنیر ورقه',g:'۲ برش'},{em:'🥄',n:'کره',g:'۱۰ گرم'}],
+steps:[{t:'کلم و هویج رو رنده کن.',art:['🥬','🥕','🔪'],cls:'art-2'},{t:'با تخم‌مرغ مخلوط و سرخ کن.',art:['🥚','🥬','🥕','🍳'],cls:'art-4'},{t:'نان رو با کره تفت بده.',art:['🍞','🧈','🔥'],cls:'art-1'},{t:'مواد رو بین نان بذار.',art:['🍞','🧀','🥬'],cls:'art-3'},{t:'سرو کن.',art:['🥪','🍽️','✨'],cls:'art-4'}],tip:'با کاهو هم می‌شه.'},
+{id:6,name:'سوپ میسو',cat:'korean',emoji:'🍜',time:'۱۵ دق',cal:۱۵۰,protein:'۸گرم',
+ing:[{em:'🍜',n:'خمیر میسو',g:'۲ قاشق'},{em:'🍢',n:'توفو',g:'۱۵۰ گرم'},{em:'🌿',n:'پیاز سبز',g:'۲ عدد'},{em:'🍄',n:'قارچ',g:'۱۰۰ گرم'},{em:'🥄',n:'سس سویا',g:'۱ قاشق'}],
+steps:[{t:'۲ لیوان آب بجوشون.',art:['💧','💧','🫕','🔥'],cls:'art-5'},{t:'میسو رو حل کن و اضافه کن.',art:['🥄','🫕','🌀'],cls:'art-1'},{t:'توفو و قارچ اضافه کن، ۵ دقیقه بپز.',art:['🍢','🍄','🫕'],cls:'art-6'},{t:'پیاز سبز آخر اضافه کن.',art:['🌿','🫕','✨'],cls:'art-2'}],tip:'میسو رو نجوشون.'},
+{id:7,name:'مرغ سرخ کره‌ای',cat:'korean',emoji:'🍗',time:'۳۰ دق',cal:۴۲۰,protein:'۳۵گرم',
+ing:[{em:'🍗',n:'ران مرغ',g:'۴ عدد'},{em:'🌾',n:'آرد',g:'۳ قاشق'},{em:'🥄',n:'سس سویا',g:'۲ قاشق'},{em:'🧄',n:'سیر',g:'۲ حبه'},{em:'🍯',n:'عسل',g:'۱ قاشق'},{em:'🌶️',n:'فلفل قرمز',g:'۱ قاشق'}],
+steps:[{t:'ران مرغ رو خرد کن.',art:['🍗','🔪','➡️','🍗🍗'],cls:'art-1'},{t:'توی آرد بزن.',art:['🍗','🌾','🔄','🍗✨'],cls:'art-4'},{t:'توی روغن داغ سرخ کن.',art:['🍗','🛢️','🔥','⏱️'],cls:'art-1'},{t:'سس رو مخلوط کن.',art:['🥄','🍯','🧄','🌶️'],cls:'art-3'},{t:'مرغ رو به سس اضافه کن و تفت بده.',art:['🍗','🥄','🔥'],cls:'art-6'}],tip:'روغن باید داغ باشه.'},
+{id:8,name:'پنکیک کره‌ای',cat:'korean',emoji:'🥞',time:'۲۰ دق',cal:۳۳۰,protein:'۱۰گرم',
+ing:[{em:'🌾',n:'آرد',g:'۱۵۰ گرم'},{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🥛',n:'شیر',g:'۱۵۰ میلی‌لیتر'},{em:'🥬',n:'پیاز سبز',g:'۳ عدد'},{em:'🥄',n:'روغن',g:'۲ قاشق'}],
+steps:[{t:'آرد، تخم‌مرغ و شیر رو مخلوط کن.',art:['🌾','🥚','🥛','🌀'],cls:'art-4'},{t:'پیاز سبز اضافه کن.',art:['🌿','🔪','🥣'],cls:'art-2'},{t:'توی تابه بریز.',art:['🥄','🥣','🫕','🔥'],cls:'art-1'},{t:'هر طرف ۲ دقیقه بپز.',art:['🥞','🔥','⏱️'],cls:'art-4'}],tip:'مایه رو استراحت بده.'},
+{id:9,name:'برنج سرخ شده',cat:'korean',emoji:'🍚',time:'۱۵ دق',cal:۳۵۰,protein:'۱۲گرم',
+ing:[{em:'🍚',n:'برنج پخته',g:'۲ پیمانه'},{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🥕',n:'هویج',g:'۱ عدد'},{em:'🌿',n:'پیاز سبز',g:'۲ عدد'},{em:'🥄',n:'سس سویا',g:'۲ قاشق'}],
+steps:[{t:'تخم‌مرغ رو هم بزن.',art:['🥚','🍳','🔀'],cls:'art-4'},{t:'هویج اضافه کن و تفت بده.',art:['🥕','🫕','🔥'],cls:'art-1'},{t:'برنج اضافه کن و مخلوط کن.',art:['🍚','🫕','🥄'],cls:'art-4'},{t:'سس سویا بریز و تفت بده.',art:['🥄','🔥','🍚'],cls:'art-6'},{t:'پیاز سبز بپاش.',art:['🌿','🍚','✨'],cls:'art-2'}],tip:'برنج سرد باشه.'},
+{id:10,name:'توفو سرخ',cat:'korean',emoji:'🍢',time:'۱۵ دق',cal:۲۲۰,protein:'۱۴گرم',
+ing:[{em:'🍢',n:'توفو',g:'۳۰۰ گرم'},{em:'🌾',n:'آرد ذرت',g:'۲ قاشق'},{em:'🥄',n:'سس سویا',g:'۲ قاشق'},{em:'🧄',n:'سیر',g:'۲ حبه'},{em:'🌶️',n:'فلفل',g:'۱ عدد'}],
+steps:[{t:'توفو رو مکعبی برش بزن و خشک کن.',art:['🍢','🔪','🧻'],cls:'art-6'},{t:'توی آرد ذرت بزن.',art:['🍢','🌾','🔄'],cls:'art-4'},{t:'توی روغن سرخ کن.',art:['🍢','🛢️','🔥'],cls:'art-1'},{t:'سس رو مخلوط کن.',art:['🧄','🌶️','🥄'],cls:'art-3'},{t:'سس بریز و سرو کن.',art:['🍢','🥄','✨'],cls:'art-6'}],tip:'توفو رو خوب خشک کن.'},
+
+{id:20,name:'آش رشته',cat:'irani',emoji:'🍲',time:'۹۰ دق',cal:۳۲۰,protein:'۱۵گرم',
+ing:[{em:'🍜',n:'رشته آش',g:'۱۵۰ گرم'},{em:'🫘',n:'نخود و لوبیا',g:'۱۰۰ گرم'},{em:'🥬',n:'سبزی آش',g:'۳۰۰ گرم'},{em:'🧅',n:'پیاز',g:'۲ عدد'},{em:'🥛',n:'کشک',g:'۳ قاشق'},{em:'🥄',n:'روغن',g:'۲ قاشق'}],
+steps:[{t:'نخود و لوبیا رو از شب قبل خیس کن.',art:['🫘','💧','🌙','⏱️'],cls:'art-5'},{t:'پیاز رو سرخ کن.',art:['🧅','🔪','🫕','🔥'],cls:'art-1'},{t:'نخود و لوبیا رو بپز تا نرم بشن.',art:['🫘','💧','🫕','⏱️'],cls:'art-5'},{t:'سبزی رو خرد و اضافه کن.',art:['🥬','🔪','🫕'],cls:'art-2'},{t:'رشته رو اضافه کن، ۱۵ دقیقه بپز.',art:['🍜','✂️','🫕'],cls:'art-4'},{t:'کشک اضافه کن.',art:['🥛','🥄','🫕'],cls:'art-6'},{t:'با پیاز داغ سرو کن.',art:['🧅','🍲','✨'],cls:'art-1'}],tip:'رشته رو آخر بریز.'},
+{id:21,name:'کشک بادمجان',cat:'irani',emoji:'🍆',time:'۴۵ دق',cal:۲۸۰,protein:'۱۰گرم',
+ing:[{em:'🍆',n:'بادمجان',g:'۴ عدد'},{em:'🧅',n:'پیاز',g:'۲ عدد'},{em:'🧄',n:'سیر',g:'۴ حبه'},{em:'🥛',n:'کشک',g:'۴ قاشق'},{em:'🌿',n:'نعنا خشک',g:'۱ قاشق'},{em:'🥄',n:'روغن',g:'۳ قاشق'}],
+steps:[{t:'بادمجان‌ها رو پوست بگیر.',art:['🍆','🔪','➡️','🍆🍆'],cls:'art-6'},{t:'توی روغن سرخ کن.',art:['🍆','🛢️','🔥','⏱️'],cls:'art-1'},{t:'پیاز رو سرخ کن.',art:['🧅','🔪','🫕','🔥'],cls:'art-1'},{t:'سیر اضافه کن.',art:['🧄','🧅','🫕'],cls:'art-2'},{t:'بادمجان‌ها رو له کن.',art:['🍆','🥄','🔄'],cls:'art-6'},{t:'با پیاز و سیر مخلوط کن.',art:['🥣','🥄','🌀'],cls:'art-2'},{t:'کشک بریز و تزئین کن.',art:['🥛','🌿','✨'],cls:'art-3'}],tip:'بادمجان رو خوب بپز.'},
+{id:22,name:'قیمه',cat:'irani',emoji:'🍛',time:'۱۲۰ دق',cal:۴۲۰,protein:'۲۸گرم',
+ing:[{em:'🥩',n:'گوشت خورشی',g:'۴۰۰ گرم'},{em:'🫘',n:'لوبیا چیتی',g:'۲۰۰ گرم'},{em:'🧅',n:'پیاز',g:'۲ عدد'},{em:'🍅',n:'رب گوجه',g:'۳ قاشق'},{em:'🍋',n:'لیمو عمانی',g:'۳ عدد'},{em:'🥄',n:'روغن',g:'۳ قاشق'}],
+steps:[{t:'لوبیا رو از شب قبل خیس کن.',art:['🫘','💧','🌙'],cls:'art-5'},{t:'پیاز رو سرخ کن.',art:['🧅','🔪','🫕','🔥'],cls:'art-1'},{t:'گوشت اضافه کن و تفت بده.',art:['🥩','🫕','🔥','⏱️'],cls:'art-1'},{t:'رب گوجه اضافه کن.',art:['🍅','🥄','🫕'],cls:'art-3'},{t:'آب اضافه کن و بپز.',art:['💧','🫕','⏱️'],cls:'art-5'},{t:'لوبیا و لیمو اضافه کن.',art:['🫘','🍋','🫕'],cls:'art-4'}],tip:'لیمو رو سوراخ کن.'},
+{id:23,name:'قورمه سبزی',cat:'irani',emoji:'🥘',time:'۱۵۰ دق',cal:۴۵۰,protein:'۳۰گرم',
+ing:[{em:'🥩',n:'گوشت',g:'۴۰۰ گرم'},{em:'🌿',n:'سبزی خورشتی',g:'۴۰۰ گرم'},{em:'🫘',n:'لوبیا قرمز',g:'۱۵۰ گرم'},{em:'🧅',n:'پیاز',g:'۲ عدد'},{em:'🍋',n:'لیمو عمانی',g:'۳ عدد'},{em:'🥄',n:'روغن',g:'۴ قاشق'}],
+steps:[{t:'لوبیا رو خیس کن.',art:['🫘','💧','🌙'],cls:'art-5'},{t:'سبزی رو خرد کن.',art:['🌿','🔪','➡️','🌿🌿'],cls:'art-2'},{t:'سبزی رو ۲۰ دقیقه تفت بده.',art:['🌿','🫕','🔥','💨'],cls:'art-2'},{t:'پیاز و گوشت تفت بده.',art:['🧅','🥩','🫕','🔥'],cls:'art-1'},{t:'همه رو مخلوط کن.',art:['🥣','💧','🌀'],cls:'art-3'},{t:'بپز.',art:['🫕','⏱️','💨'],cls:'art-4'},{t:'لیمو رو آخر اضافه کن.',art:['🍋','🫕','✨'],cls:'art-4'}],tip:'سبزی رو خوب تفت بده.'},
+{id:24,name:'زرشک پلو',cat:'irani',emoji:'🍚',time:'۶۰ دق',cal:۳۸۰,protein:'۲۵گرم',
+ing:[{em:'🍗',n:'ران مرغ',g:'۴ عدد'},{em:'🍚',n:'برنج',g:'۳ پیمانه'},{em:'🍒',n:'زرشک',g:'۱۰۰ گرم'},{em:'🧈',n:'کره',g:'۳۰ گرم'},{em:'🌰',n:'خلال پسته',g:'۲۰ گرم'},{em:'🥄',n:'زعفران',g:'۱ قاشق'}],
+steps:[{t:'برنج رو خیس کن.',art:['🍚','💧','⏱️'],cls:'art-5'},{t:'مرغ رو بپز.',art:['🍗','🧅','🫕','⏱️'],cls:'art-1'},{t:'برنج رو آبکش کن.',art:['🍚','🥣','💧'],cls:'art-4'},{t:'ته قابلمه رو بچین.',art:['🍞','🥄','🫕'],cls:'art-1'},{t:'زرشک رو تفت بده.',art:['🍒','🧈','🫕'],cls:'art-3'},{t:'تزئین کن.',art:['🍚','🍗','🍒','✨'],cls:'art-3'}],tip:'زرشک رو زیاد تفت نده.'},
+{id:25,name:'کوکو سبزی',cat:'irani',emoji:'🍳',time:'۳۰ دق',cal:۲۵۰,protein:'۱۲گرم',
+ing:[{em:'🌿',n:'سبزی کوکو',g:'۳۰۰ گرم'},{em:'🥚',n:'تخم‌مرغ',g:'۴ عدد'},{em:'🥔',n:'سیب‌زمینی',g:'۲ عدد'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🌾',n:'آرد',g:'۲ قاشق'},{em:'🥄',n:'روغن',g:'۳ قاشق'}],
+steps:[{t:'سبزی رو خرد کن.',art:['🌿','🔪','➡️','🌿🌿'],cls:'art-2'},{t:'سیب‌زمینی رو رنده کن.',art:['🥔','🔪','🥣'],cls:'art-4'},{t:'تخم‌مرغ، آرد و پیاز اضافه کن.',art:['🥚','🌾','🧅','🥣'],cls:'art-4'},{t:'مخلوط کن.',art:['🥣','🥄','🌀'],cls:'art-2'},{t:'توی تابه سرخ کن.',art:['🍳','🔥','⏱️'],cls:'art-1'}],tip:'آب سیب‌زمینی رو بگیر.'},
+{id:26,name:'میرزا قاسمی',cat:'irani',emoji:'🍆',time:'۴۰ دق',cal:۲۲۰,protein:'۱۲گرم',
+ing:[{em:'🍆',n:'بادمجان',g:'۳ عدد'},{em:'🍅',n:'گوجه',g:'۳ عدد'},{em:'🧄',n:'سیر',g:'۴ حبه'},{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🥄',n:'روغن',g:'۳ قاشق'}],
+steps:[{t:'بادمجان‌ها رو کبابی کن.',art:['🍆','🔥','♨️'],cls:'art-6'},{t:'پوست بگیر و له کن.',art:['🍆','🔪','🥣'],cls:'art-6'},{t:'گوجه رو رنده کن.',art:['🍅','🪒','🥣'],cls:'art-3'},{t:'سیر اضافه کن.',art:['🧄','🍆','🥣'],cls:'art-6'},{t:'توی تابه تفت بده.',art:['🫕','🔥','⏱️'],cls:'art-1'},{t:'تخم‌مرغ اضافه کن.',art:['🥚','🥄','🍳'],cls:'art-4'}],tip:'بادمجان کبابی بهتره.'},
+{id:27,name:'عدسی',cat:'irani',emoji:'🍲',time:'۶۰ دق',cal:۲۸۰,protein:'۱۸گرم',
+ing:[{em:'🫘',n:'عدس',g:'۲ پیمانه'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🍅',n:'رب گوجه',g:'۲ قاشق'},{em:'🥔',n:'سیب‌زمینی',g:'۱ عدد'},{em:'🌿',n:'آویشن',g:'۱ قاشق'},{em:'🥄',n:'روغن',g:'۲ قاشق'}],
+steps:[{t:'عدس رو با آب بجوشون.',art:['🫘','💧','🫕'],cls:'art-5'},{t:'پیاز رو سرخ کن.',art:['🧅','🔪','🫕','🔥'],cls:'art-1'},{t:'رب گوجه اضافه کن.',art:['🍅','🥄','🫕'],cls:'art-3'},{t:'سیب‌زمینی اضافه کن.',art:['🥔','🔪','🫕'],cls:'art-4'},{t:'بپز تا نرم بشه.',art:['🫕','⏱️','💨'],cls:'art-5'},{t:'آویشن و پیاز داغ اضافه کن.',art:['🌿','🧅','✨'],cls:'art-2'}],tip:'با حرارت کم بپز.'},
+{id:28,name:'آبدوغ خیار',cat:'irani',emoji:'🥣',time:'۱۵ دق',cal:۱۵۰,protein:'۸گرم',
+ing:[{em:'🥛',n:'ماست',g:'۵۰۰ گرم'},{em:'🥒',n:'خیار',g:'۳ عدد'},{em:'🌿',n:'نعنا خشک',g:'۲ قاشق'},{em:'🌰',n:'گردو',g:'۵۰ گرم'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'💧',n:'آب',g:'۱ لیوان'}],
+steps:[{t:'ماست رو با آب مخلوط کن.',art:['🥛','💧','🥣','🌀'],cls:'art-3'},{t:'خیار رنده کن.',art:['🥒','🪒','🥣'],cls:'art-2'},{t:'پیاز رنده کن.',art:['🧅','🪒','🥣'],cls:'art-2'},{t:'نعنا و گردو اضافه کن.',art:['🌿','🌰','🥄'],cls:'art-2'},{t:'سرد سرو کن.',art:['🥣','🌀','❄️'],cls:'art-5'}],tip:'با نان تازه بخور.'},
+{id:29,name:'حلیم بادمجان',cat:'irani',emoji:'🍆',time:'۶۰ دق',cal:۳۲۰,protein:'۱۴گرم',
+ing:[{em:'🍆',n:'بادمجان',g:'۴ عدد'},{em:'🥩',n:'گوشت چرخ‌کرده',g:'۳۰۰ گرم'},{em:'🧅',n:'پیاز',g:'۲ عدد'},{em:'🥛',n:'کشک',g:'۳ قاشق'},{em:'🥄',n:'روغن',g:'۳ قاشق'}],
+steps:[{t:'بادمجان سرخ کن.',art:['🍆','🛢️','🔥','⏱️'],cls:'art-6'},{t:'بادمجان له کن.',art:['🍆','🥄','🥣'],cls:'art-6'},{t:'پیاز و گوشت تفت بده.',art:['🧅','🥩','🫕','🔥'],cls:'art-1'},{t:'بادمجان اضافه کن.',art:['🍆','🥩','🥣'],cls:'art-6'},{t:'بپز.',art:['🫕','⏱️','💨'],cls:'art-5'},{t:'با کشک تزئین کن.',art:['🥛','🌿','✨'],cls:'art-3'}],tip:'کشک رو آخر بریز.'},
+{id:30,name:'شامی کباب',cat:'irani',emoji:'🍔',time:'۴۰ دق',cal:۳۵۰,protein:'۲۰گرم',
+ing:[{em:'🥩',n:'گوشت چرخ‌کرده',g:'۴۰۰ گرم'},{em:'🥔',n:'سیب‌زمینی',g:'۳ عدد'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🌾',n:'آرد',g:'۳ قاشق'},{em:'🥄',n:'روغن',g:'۳ قاشق'}],
+steps:[{t:'سیب‌زمینی بپز و رنده کن.',art:['🥔','🫕','🔥','🪒'],cls:'art-4'},{t:'گوشت، پیاز و سیب‌زمینی مخلوط کن.',art:['🥩','🧅','🥔','🥣'],cls:'art-1'},{t:'ادویه اضافه کن.',art:['🧂','🌶️','🥣'],cls:'art-3'},{t:'گلوله دربیار.',art:['🤲','🥣','⚪'],cls:'art-2'},{t:'توی تخم‌مرغ بزن.',art:['🥚','⚪','💧'],cls:'art-4'},{t:'توی روغن سرخ کن.',art:['⚪','🛢️','🔥','✨'],cls:'art-1'}],tip:'گوشت رو با پیاز چرخ کن.'},
+{id:31,name:'کتلت',cat:'irani',emoji:'🍔',time:'۳۰ دق',cal:۳۴۰,protein:'۲۲گرم',
+ing:[{em:'🥩',n:'گوشت چرخ‌کرده',g:'۴۰۰ گرم'},{em:'🥔',n:'سیب‌زمینی',g:'۳ عدد'},{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🌾',n:'آرد سوخاری',g:'۱۰۰ گرم'},{em:'🥄',n:'روغن',g:'۳ قاشق'}],
+steps:[{t:'سیب‌زمینی رنده و آبکش کن.',art:['🥔','🪒','💧'],cls:'art-4'},{t:'همه مواد مخلوط کن.',art:['🥩','🧅','🥔','🥣'],cls:'art-1'},{t:'تخم‌مرغ اضافه کن.',art:['🥚','🤲','🥣'],cls:'art-4'},{t:'توی آرد سوخاری بزن.',art:['⚪','🌾','🔄'],cls:'art-3'},{t:'سرخ کن.',art:['⚪','🛢️','🔥','✨'],cls:'art-1'}],tip:'توی یخچال بذار سفت بشه.'},
+{id:32,name:'خیار شور',cat:'irani',emoji:'🥒',time:'۲۴ ساعت',cal:۳۰,protein:'۱گرم',
+ing:[{em:'🥒',n:'خیار',g:'۱ کیلو'},{em:'🧄',n:'سیر',g:'۵ حبه'},{em:'🌿',n:'شوید',g:'۲۰۰ گرم'},{em:'🧂',n:'نمک',g:'۳ قاشق'},{em:'💧',n:'آب',g:'۲ لیتر'},{em:'🍶',n:'سرکه',g:'۱ لیوان'}],
+steps:[{t:'خیارها رو بشور.',art:['🥒','💧','🧻'],cls:'art-2'},{t:'آب نمک و سرکه بجوشون.',art:['🧂','🍶','💧','🔥'],cls:'art-5'},{t:'لایه‌لایه بچین.',art:['🫙','🥒','🧄','🌿'],cls:'art-2'},{t:'آب خنک بریز.',art:['💧','🫙','🍶'],cls:'art-5'},{t:'۲۴ ساعت یخچال.',art:['🫙','❄️','⏱️'],cls:'art-6'}],tip:'شیشه باید خشک باشه.'},
+{id:33,name:'ترشی لیته',cat:'irani',emoji:'🍆',time:'۶۰ دق',cal:۵۰,protein:'۲گرم',
+ing:[{em:'🍆',n:'بادمجان',g:'۲ کیلو'},{em:'🥕',n:'هویج',g:'۲ عدد'},{em:'🌿',n:'سبزی معطر',g:'۳۰۰ گرم'},{em:'🧄',n:'سیر',g:'۶ حبه'},{em:'🍶',n:'سرکه',g:'۲ لیوان'},{em:'🧂',n:'نمک',g:'۲ قاشق'}],
+steps:[{t:'بادمجان کبابی کن.',art:['🍆','🔥','♨️','🪒'],cls:'art-6'},{t:'بادمجان خرد کن.',art:['🍆','🔪','🥣'],cls:'art-6'},{t:'سبزی و هویج خرد کن.',art:['🌿','🥕','🔪'],cls:'art-2'},{t:'همه با سرکه مخلوط کن.',art:['🍶','🧂','🥣','🌀'],cls:'art-3'},{t:'توی شیشه بریز.',art:['🫙','⏱️','✨'],cls:'art-4'}],tip:'هر روز هم بزن.'},
+{id:34,name:'نرگسی',cat:'irani',emoji:'🍳',time:'۲۰ دق',cal:۳۰۰,protein:'۲۰گرم',
+ing:[{em:'🥚',n:'تخم‌مرغ',g:'۴ عدد'},{em:'🥬',n:'اسفناج',g:'۲۰۰ گرم'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🧄',n:'سیر',g:'۲ حبه'},{em:'🥄',n:'روغن',g:'۲ قاشق'}],
+steps:[{t:'اسفناج رو خرد کن.',art:['🥬','🔪','➡️','🥬🥬'],cls:'art-2'},{t:'پیاز سرخ کن.',art:['🧅','🔪','🫕','🔥'],cls:'art-1'},{t:'اسفناج اضافه کن.',art:['🥬','🫕','🔥'],cls:'art-2'},{t:'تخم‌مرغ روش بشکن.',art:['🥚','🥚','🍳'],cls:'art-4'},{t:'درب بذار و بپز.',art:['🍳','⏱️','♨️'],cls:'art-1'}],tip:'با نان تازه بخور.'},
+{id:35,name:'کله‌پاچه ساده',cat:'irani',emoji:'🍖',time:'۱۸۰ دق',cal:۵۰۰,protein:'۴۵گرم',
+ing:[{em:'🍖',n:'کله پاچه',g:'۱ کیلو'},{em:'🧅',n:'پیاز',g:'۳ عدد'},{em:'🧄',n:'سیر',g:'۵ حبه'},{em:'🥔',n:'نخود',g:'۱۰۰ گرم'},{em:'🍋',n:'لیمو',g:'۲ عدد'},{em:'🌿',n:'آویشن',g:'۲ قاشق'}],
+steps:[{t:'کله پاچه رو بشور.',art:['🍖','💧','🧼'],cls:'art-1'},{t:'نخود رو خیس کن.',art:['🥔','💧','🌙'],cls:'art-4'},{t:'با آب بجوشون.',art:['🍖','💧','🫕','🔥'],cls:'art-1'},{t:'کف بگیر و بپز.',art:['🥄','🫕','⏱️'],cls:'art-5'},{t:'آویشن و لیمو آخر اضافه کن.',art:['🌿','🍋','🫕'],cls:'art-2'}],tip:'آبش رو با نان بخور.'},
+{id:36,name:'آبدوغ با نان',cat:'irani',emoji:'🥣',time:'۵ دق',cal:۲۰۰,protein:'۱۰گرم',
+ing:[{em:'🥛',n:'ماست',g:'۳۰۰ گرم'},{em:'💧',n:'آب',g:'۱ لیوان'},{em:'🥒',n:'خیار',g:'۱ عدد'},{em:'🌿',n:'نعنا',g:'۱ قاشق'},{em:'🧂',n:'نمک',g:'کمی'}],
+steps:[{t:'ماست رو با آب مخلوط کن.',art:['🥛','💧','🥣','🌀'],cls:'art-3'},{t:'خیار رنده کن.',art:['🥒','🪒','🥣'],cls:'art-2'},{t:'نعنا و نمک اضافه کن.',art:['🌿','🧂','🥄'],cls:'art-2'},{t:'با نان سرو کن.',art:['🥣','🍞','✨'],cls:'art-4'}],tip:'سرد سرو کن.'},
+{id:37,name:'شیر برنج',cat:'irani',emoji:'🥛',time:'۴۵ دق',cal:۲۲۰,protein:'۸گرم',
+ing:[{em:'🍚',n:'برنج',g:'۱ پیمانه'},{em:'🥛',n:'شیر',g:'۲ لیوان'},{em:'🍯',n:'عسل',g:'۲ قاشق'},{em:'🌰',n:'دارچین',g:'۱ قاشق'}],
+steps:[{t:'برنج رو با آب بپز.',art:['🍚','💧','🫕','🔥'],cls:'art-4'},{t:'شیر اضافه کن.',art:['🥛','🫕','🌊'],cls:'art-3'},{t:'با حرارت کم هم بزن.',art:['🥄','🫕','⏱️'],cls:'art-5'},{t:'عسل اضافه کن.',art:['🍯','🥄','🫕'],cls:'art-4'},{t:'با دارچین تزئین کن.',art:['🌰','🥣','✨'],cls:'art-6'}],tip:'گرم یا سرد بخور.'},
+{id:38,name:'تخم‌مرغ آب‌پز',cat:'irani',emoji:'🥚',time:'۱۰ دق',cal:۱۵۰,protein:'۱۲گرم',
+ing:[{em:'🥚',n:'تخم‌مرغ',g:'۳ عدد'},{em:'🧂',n:'نمک',g:'کمی'},{em:'🌶️',n:'فلفل',g:'کمی'}],
+steps:[{t:'تخم‌مرغ‌ها توی قابلمه بذار.',art:['🥚','🥚','🥚','🫕'],cls:'art-4'},{t:'آب بریز تا پوشیده بشه.',art:['💧','🫕','🌊'],cls:'art-5'},{t:'۸ دقیقه بجوشون.',art:['🫕','🔥','⏱️'],cls:'art-1'},{t:'توی آب سرد بذار.',art:['🥚','❄️','💧'],cls:'art-5'},{t:'پوست بگیر.',art:['🥚','🧂','🌶️'],cls:'art-4'}],tip:'آب سرد پوست رو راحت جدا می‌کنه.'},
+{id:39,name:'ماکارونی ساده',cat:'irani',emoji:'🍝',time:'۱۵ دق',cal:۳۵۰,protein:'۱۲گرم',
+ing:[{em:'🍝',n:'ماکارونی',g:'۱۵۰ گرم'},{em:'🧈',n:'کره',g:'۲۰ گرم'},{em:'🧀',n:'پنیر رنده',g:'۳۰ گرم'},{em:'🧂',n:'نمک',g:'کمی'}],
+steps:[{t:'آب بجوشون و نمک بریز.',art:['💧','🧂','🫕','🔥'],cls:'art-5'},{t:'ماکارونی رو بپز.',art:['🍝','🫕','⏱️'],cls:'art-4'},{t:'آبکش کن.',art:['🍝','🥣','💧'],cls:'art-4'},{t:'کره اضافه کن.',art:['🧈','🍝','🥄'],cls:'art-1'},{t:'پنیر رنده کن.',art:['🧀','🍝','✨'],cls:'art-4'}],tip:'از آب ماکارونی نگه دار.'},
+
+{id:40,name:'املت ساده',cat:'ready',emoji:'🍳',time:'۸ دق',cal:۲۲۰,protein:'۱۵گرم',
+ing:[{em:'🥚',n:'تخم‌مرغ',g:'۳ عدد'},{em:'🧈',n:'کره',g:'۱۰ گرم'},{em:'🧂',n:'نمک و فلفل',g:'کمی'}],
+steps:[{t:'تخم‌مرغ‌ها توی کاسه بشکن.',art:['🥚','🥚','🥚','🥣'],cls:'art-4'},{t:'نمک و فلفل اضافه کن.',art:['🧂','🌶️','🥄'],cls:'art-3'},{t:'کره توی تابه ذوب کن.',art:['🧈','🫕','🔥'],cls:'art-1'},{t:'تخم‌مرغ بریز.',art:['🥣','🫕','⏱️'],cls:'art-4'},{t:'تا کن و سرو کن.',art:['🍳','🥣','✨'],cls:'art-4'}],tip:'آتیش کم باشه.'},
+{id:41,name:'ماکارونی پنیری',cat:'ready',emoji:'🍝',time:'۱۵ دق',cal:۴۰۰,protein:'۱۵گرم',
+ing:[{em:'🍝',n:'ماکارونی',g:'۱۵۰ گرم'},{em:'🧀',n:'پنیر پیتزا',g:'۱۰۰ گرم'},{em:'🍅',n:'سس گوجه',g:'۳ قاشق'},{em:'🥄',n:'روغن',g:'۱ قاشق'}],
+steps:[{t:'ماکارونی بپز.',art:['🍝','🫕','🔥','⏱️'],cls:'art-4'},{t:'آبکش کن.',art:['🍝','🥣','💧'],cls:'art-4'},{t:'سس گوجه اضافه کن.',art:['🍅','🥄','🍝'],cls:'art-3'},{t:'پنیر روش بریز.',art:['🧀','🍝','✨'],cls:'art-4'},{t:'توی تابه دربسته بذار.',art:['🍝','🫕','🔥'],cls:'art-1'}],tip:'پنیر رو زیاد بریز.'},
+{id:42,name:'تست پنیر',cat:'ready',emoji:'🥪',time:'۶ دق',cal:۲۸۰,protein:'۱۴گرم',
+ing:[{em:'🍞',n:'نان تست',g:'۲ برش'},{em:'🧀',n:'پنیر ورقه',g:'۲ برش'},{em:'🧈',n:'کره',g:'۱۰ گرم'}],
+steps:[{t:'نان رو با کره تفت بده.',art:['🍞','🧈','🔥'],cls:'art-1'},{t:'پنیر بین نان بذار.',art:['🍞','🧀','🍞'],cls:'art-4'},{t:'توی تابه گرم کن.',art:['🥪','🫕','🔥'],cls:'art-1'},{t:'نصف کن و سرو کن.',art:['🔪','🥪','✨'],cls:'art-3'}],tip:'گوجه هم اضافه کن.'},
+{id:43,name:'سالاد کاهو',cat:'ready',emoji:'🥬',time:'۵ دق',cal:۸۰,protein:'۳گرم',
+ing:[{em:'🥬',n:'کاهو',g:'۱۵۰ گرم'},{em:'🍋',n:'آبلیمو',g:'۲ قاشق'},{em:'🫒',n:'روغن زیتون',g:'۱ قاشق'},{em:'🧂',n:'نمک',g:'کمی'}],
+steps:[{t:'کاهو رو بشور.',art:['🥬','💧','🧼'],cls:'art-2'},{t:'خرد کن.',art:['🥬','🔪','🥣'],cls:'art-2'},{t:'آبلیمو و روغن بریز.',art:['🍋','🫒','🥣'],cls:'art-2'},{t:'نمک بزن.',art:['🧂','🥣','🌀'],cls:'art-2'}],tip:'با دست پاره کن.'},
+{id:44,name:'نان و پنیر',cat:'ready',emoji:'🧀',time:'۳ دق',cal:۲۸۰,protein:'۱۲گرم',
+ing:[{em:'🍞',n:'نان سنگک',g:'۲ برش'},{em:'🧀',n:'پنیر',g:'۵۰ گرم'},{em:'🌰',n:'گردو',g:'۳۰ گرم'},{em:'🌿',n:'سبزی خوردن',g:'کمی'}],
+steps:[{t:'نان رو بشقاب بذار.',art:['🍞','🍽️','✨'],cls:'art-4'},{t:'پنیر ورقه کن.',art:['🧀','🔪','➡️'],cls:'art-3'},{t:'گردو خرد کن.',art:['🌰','🔪','➡️'],cls:'art-6'},{t:'با سبزی سرو کن.',art:['🌿','🍽️','✨'],cls:'art-2'}],tip:'با چای عالیه.'},
+{id:45,name:'عدسی آماده',cat:'ready',emoji:'🍲',time:'۳۰ دق',cal:۳۰۰,protein:'۱۶گرم',
+ing:[{em:'🫘',n:'عدس',g:'۱ پیمانه'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🍅',n:'رب گوجه',g:'۱ قاشق'},{em:'🥄',n:'روغن',g:'۲ قاشق'}],
+steps:[{t:'عدس رو با آب بپز.',art:['🫘','💧','🫕','🔥'],cls:'art-5'},{t:'پیاز سرخ کن.',art:['🧅','🔪','🫕','🔥'],cls:'art-1'},{t:'رب گوجه تفت بده.',art:['🍅','🧅','🫕'],cls:'art-3'},{t:'به عدس اضافه کن.',art:['🫕','⏱️','💨'],cls:'art-5'},{t:'با نان سرو کن.',art:['🍲','🍞','✨'],cls:'art-4'}],tip:'آویشن بزن.'},
+{id:46,name:'املت گوجه',cat:'ready',emoji:'🍅',time:'۱۲ دق',cal:۲۴۰,protein:'۱۴گرم',
+ing:[{em:'🥚',n:'تخم‌مرغ',g:'۳ عدد'},{em:'🍅',n:'گوجه',g:'۲ عدد'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🥄',n:'روغن',g:'۱ قاشق'}],
+steps:[{t:'گوجه و پیاز خرد کن.',art:['🍅','🧅','🔪'],cls:'art-3'},{t:'با روغن تفت بده.',art:['🍅','🧅','🫕','🔥'],cls:'art-1'},{t:'تخم‌مرغ روش بشکن.',art:['🥚','🥚','🍳'],cls:'art-4'},{t:'هم بزن.',art:['🥄','🍳','🔥'],cls:'art-1'},{t:'با نان سرو کن.',art:['🍳','🍞','✨'],cls:'art-4'}],tip:'گوجه رو خوب تفت بده.'},
+{id:47,name:'خوراک لوبیا',cat:'ready',emoji:'🫘',time:'۳۰ دق',cal:۳۲۰,protein:'۱۶گرم',
+ing:[{em:'🫘',n:'لوبیا چیتی',g:'۲ پیمانه'},{em:'🍅',n:'رب گوجه',g:'۲ قاشق'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🌶️',n:'فلفل',g:'۱ عدد'},{em:'🥄',n:'روغن',g:'۲ قاشق'}],
+steps:[{t:'لوبیا رو خیس کن.',art:['🫘','💧','🌙'],cls:'art-5'},{t:'بپز تا نرم بشه.',art:['🫘','🫕','🔥','⏱️'],cls:'art-5'},{t:'پیاز و فلفل سرخ کن.',art:['🧅','🌶️','🫕','🔥'],cls:'art-1'},{t:'رب اضافه کن.',art:['🍅','🥄','🫕'],cls:'art-3'},{t:'به لوبیا اضافه کن.',art:['🫘','🫕','⏱️'],cls:'art-4'}],tip:'با نان بربری بخور.'},
+{id:48,name:'کته ساده',cat:'ready',emoji:'🍚',time:'۳۰ دق',cal:۳۰۰,protein:'۶گرم',
+ing:[{em:'🍚',n:'برنج',g:'۲ پیمانه'},{em:'🧈',n:'کره',g:'۲۰ گرم'},{em:'🧂',n:'نمک',g:'۱ قاشق'}],
+steps:[{t:'برنج رو بشور.',art:['🍚','💧','🌀'],cls:'art-4'},{t:'با آب و نمک بجوشون.',art:['🍚','💧','🧂','🫕'],cls:'art-5'},{t:'حرارت کم کن.',art:['🫕','🔥','⬇️'],cls:'art-1'},{t:'دم کن.',art:['🫕','⏱️','♨️'],cls:'art-4'},{t:'کره اضافه کن.',art:['🧈','🍚','✨'],cls:'art-1'}],tip:'دستمال زیر درب بذار.'},
+{id:49,name:'سالاد ماکارونی',cat:'ready',emoji:'🥗',time:'۲۰ دق',cal:۳۲۰,protein:'۱۰گرم',
+ing:[{em:'🍝',n:'ماکارونی',g:'۲۰۰ گرم'},{em:'🥒',n:'خیارشور',g:'۳ عدد'},{em:'🌽',n:'ذرت',g:'۱ پیمانه'},{em:'🥛',n:'ماست',g:'۳ قاشق'},{em:'🥄',n:'مایونز',g:'۲ قاشق'}],
+steps:[{t:'ماکارونی بپز.',art:['🍝','🫕','🔥','⏱️'],cls:'art-4'},{t:'آبکش کن و خنک بذار.',art:['🍝','🥣','❄️'],cls:'art-5'},{t:'خیارشور خرد کن.',art:['🥒','🔪','➡️'],cls:'art-2'},{t:'همه مخلوط کن.',art:['🌽','🍝','🥣'],cls:'art-4'},{t:'ماست و مایونز اضافه کن.',art:['🥛','🥄','🥣','🌀'],cls:'art-3'}],tip:'یخچال بذار تا جا بیفته.'},
+{id:50,name:'نیمرو',cat:'ready',emoji:'🍳',time:'۵ دق',cal:۲۲۰,protein:'۱۲گرم',
+ing:[{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🧈',n:'کره',g:'۱۰ گرم'},{em:'🍞',n:'نان',g:'۲ برش'},{em:'🧂',n:'نمک',g:'کمی'}],
+steps:[{t:'کره توی تابه ذوب کن.',art:['🧈','🫕','🔥'],cls:'art-1'},{t:'تخم‌مرغ‌ها روش بشکن.',art:['🥚','🥚','🍳'],cls:'art-4'},{t:'۳ دقیقه بپز.',art:['🍳','⏱️','♨️'],cls:'art-4'},{t:'با نان سرو کن.',art:['🧂','🍞','✨'],cls:'art-4'}],tip:'زرده شل باشه.'},
+{id:51,name:'سوپ جو',cat:'ready',emoji:'🍲',time:'۴۰ دق',cal:۲۰۰,protein:'۸گرم',
+ing:[{em:'🌾',n:'جو پرک',g:'۱ پیمانه'},{em:'🥕',n:'هویج',g:'۲ عدد'},{em:'🥔',n:'سیب‌زمینی',g:'۱ عدد'},{em:'🧅',n:'پیاز',g:'۱ عدد'},{em:'🥛',n:'شیر',g:'۱ لیوان'}],
+steps:[{t:'پیاز سرخ کن.',art:['🧅','🔪','🫕','🔥'],cls:'art-1'},{t:'هویج و سیب‌زمینی خرد کن.',art:['🥕','🥔','🔪'],cls:'art-2'},{t:'با آب بپز.',art:['💧','🫕','⏱️'],cls:'art-5'},{t:'جو اضافه کن.',art:['🌾','🫕','🥄'],cls:'art-4'},{t:'شیر آخر اضافه کن.',art:['🥛','🫕','✨'],cls:'art-3'}],tip:'شیر رو نجوشون.'},
+{id:52,name:'تخم‌مرغ و گوجه',cat:'ready',emoji:'🍅',time:'۱۰ دق',cal:۲۱۰,protein:'۱۳گرم',
+ing:[{em:'🥚',n:'تخم‌مرغ',g:'۳ عدد'},{em:'🍅',n:'گوجه',g:'۳ عدد'},{em:'🥄',n:'روغن',g:'۱ قاشق'}],
+steps:[{t:'گوجه رو خرد کن.',art:['🍅','🔪','🥣'],cls:'art-3'},{t:'توی تابه تفت بده.',art:['🍅','🫕','🔥'],cls:'art-1'},{t:'تخم‌مرغ روش بشکن.',art:['🥚','🥚','🍳'],cls:'art-4'},{t:'بپز.',art:['🍳','⏱️','♨️'],cls:'art-4'}],tip:'با نان بخور.'},
+{id:53,name:'سالاد کلم',cat:'ready',emoji:'🥬',time:'۱۰ دق',cal:۱۲۰,protein:'۳گرم',
+ing:[{em:'🥬',n:'کلم',g:'۳۰۰ گرم'},{em:'🥕',n:'هویج',g:'۱ عدد'},{em:'🥄',n:'مایونز',g:'۳ قاشق'},{em:'🍋',n:'آبلیمو',g:'۱ قاشق'}],
+steps:[{t:'کلم رو ریز خرد کن.',art:['🥬','🔪','➡️'],cls:'art-2'},{t:'هویج رنده کن.',art:['🥕','🪒','🥣'],cls:'art-1'},{t:'مایونز اضافه کن.',art:['🥄','🥣','🌀'],cls:'art-4'},{t:'آبلیمو بزن.',art:['🍋','🥣','✨'],cls:'art-2'}],tip:'سرد سرو کن.'},
+{id:54,name:'ساندویچ تخم‌مرغ',cat:'ready',emoji:'🥪',time:'۱۰ دق',cal:۳۰۰,protein:'۱۵گرم',
+ing:[{em:'🍞',n:'نان',g:'۴ برش'},{em:'🥚',n:'تخم‌مرغ',g:'۳ عدد'},{em:'🥄',n:'مایونز',g:'۲ قاشق'},{em:'🥬',n:'کاهو',g:'۲ برگ'}],
+steps:[{t:'تخم‌مرغ آب‌پز کن.',art:['🥚','🫕','🔥','⏱️'],cls:'art-4'},{t:'پوست بگیر و له کن.',art:['🥚','🍴','🥣'],cls:'art-4'},{t:'مایونز اضافه کن.',art:['🥄','🥣','🌀'],cls:'art-4'},{t:'روی نان بمال.',art:['🍞','🥣','✨'],cls:'art-1'},{t:'کاهو بذار و سرو کن.',art:['🥬','🥪','✨'],cls:'art-2'}],tip:'با خیارشور بخور.'},
+
+{id:60,name:'موس شکلاتی',cat:'dessert',emoji:'🍫',time:'۱۵ دق',cal:۱۵۰,protein:'۸گرم',
+ing:[{em:'🥑',n:'آووکادو',g:'۱ عدد'},{em:'🍫',n:'پودر کاکائو',g:'۳ قاشق'},{em:'🍯',n:'عسل',g:'۲ قاشق'},{em:'🥛',n:'شیر',g:'۱۰۰ میلی‌لیتر'}],
+steps:[{t:'آووکادو رو نصف کن.',art:['🥑','🔪','➡️','🥑'],cls:'art-2'},{t:'گوشتش رو با قاشق جدا کن.',art:['🥑','🥄','🥣'],cls:'art-2'},{t:'با چنگال له کن.',art:['🥑','🍴','🥣'],cls:'art-2'},{t:'کاکائو، عسل و شیر اضافه کن.',art:['🍫','🍯','🥛','🥣'],cls:'art-6'},{t:'مخلوط کن.',art:['🥣','🥄','🌀','✨'],cls:'art-6'},{t:'۱ ساعت یخچال.',art:['🥣','❄️','⏱️'],cls:'art-5'}],tip:'آووکادو رسیده باشه.'},
+{id:61,name:'بستنی موز',cat:'dessert',emoji:'🍨',time:'۴ ساعت',cal:۱۲۰,protein:'۳گرم',
+ing:[{em:'🍌',n:'موز',g:'۳ عدد'},{em:'🍓',n:'توت‌فرنگی',g:'۱۵۰ گرم'},{em:'🍯',n:'عسل',g:'۱ قاشق'},{em:'🥛',n:'شیر',g:'۳ قاشق'}],
+steps:[{t:'موز رو خرد کن.',art:['🍌','🔪','➡️','🍌'],cls:'art-4'},{t:'توی فریزر بذار.',art:['🍌','🧊','❄️'],cls:'art-5'},{t:'با توت و عسل و شیر مخلوط کن.',art:['🍓','🍯','🥛','🍌'],cls:'art-3'},{t:'با چنگال له کن.',art:['🍴','🥣','🌀'],cls:'art-3'},{t:'دوباره فریزر.',art:['🍨','❄️','⏱️'],cls:'art-5'}],tip:'موز یخ‌زده بستنی می‌شه.'},
+{id:62,name:'پودینگ چیا',cat:'dessert',emoji:'🥣',time:'۴ ساعت',cal:۱۸۰,protein:'۹گرم',
+ing:[{em:'🌱',n:'دانه چیا',g:'۴ قاشق'},{em:'🥛',n:'شیر',g:'۱ لیوان'},{em:'🍯',n:'عسل',g:'۲ قاشق'},{em:'🍓',n:'توت',g:'۵۰ گرم'}],
+steps:[{t:'دانه چیا توی کاسه.',art:['🌱','🥣','✨'],cls:'art-2'},{t:'شیر اضافه کن.',art:['🥛','🥣','🌊'],cls:'art-3'},{t:'عسل اضافه کن.',art:['🍯','🥄','🥣'],cls:'art-4'},{t:'۱۵ دقیقه صبر کن و هم بزن.',art:['🥣','⏱️','🥄'],cls:'art-5'},{t:'۴ ساعت یخچال.',art:['🥣','❄️','✨'],cls:'art-5'},{t:'با توت تزئین کن.',art:['🍓','🥣','✨'],cls:'art-3'}],tip:'چیا ۱۰ برابر آب جذب می‌کنه.'},
+{id:63,name:'توپ خرما',cat:'dessert',emoji:'🌰',time:'۲۰ دق',cal:۹۰,protein:'۳گرم',
+ing:[{em:'🌴',n:'خرما',g:'۱۵۰ گرم'},{em:'🥥',n:'پودر نارگیل',g:'۵۰ گرم'},{em:'🌰',n:'بادام',g:'۵۰ گرم'},{em:'🍫',n:'کاکائو',g:'۱ قاشق'}],
+steps:[{t:'خرما رو هسته بگیر.',art:['🌴','🔪','➡️','🌴'],cls:'art-6'},{t:'بادام خرد کن.',art:['🌰','🔪','➡️'],cls:'art-6'},{t:'همه رو چرخ کن.',art:['🌴','🌰','🥥','🌀'],cls:'art-6'},{t:'توپ دربیار.',art:['🤲','⚪','⚪'],cls:'art-4'},{t:'توی نارگیل بزن.',art:['⚪','🥥','🔄'],cls:'art-2'},{t:'۳۰ دقیقه یخچال.',art:['⚪','❄️','⏱️'],cls:'art-5'}],tip:'خرما رو خیس کن.'},
+{id:64,name:'سالاد میوه',cat:'dessert',emoji:'🍓',time:'۱۰ دق',cal:۱۴۰,protein:'۲گرم',
+ing:[{em:'🍓',n:'توت‌فرنگی',g:'۱۰۰ گرم'},{em:'🍎',n:'سیب',g:'۱ عدد'},{em:'🍌',n:'موز',g:'۱ عدد'},{em:'🍯',n:'عسل',g:'۱ قاشق'},{em:'🍋',n:'آبلیمو',g:'۱ قاشق'}],
+steps:[{t:'میوه‌ها رو بشور.',art:['🍓','🍎','🍌','💧'],cls:'art-3'},{t:'خرد کن.',art:['🔪','🍓','🍎','🍌'],cls:'art-3'},{t:'توی کاسه بریز.',art:['🥣','🍓','🍎'],cls:'art-3'},{t:'عسل و آبلیمو مخلوط کن.',art:['🍯','🍋','🥄'],cls:'art-4'},{t:'روی میوه بریز.',art:['🥣','🌀','✨'],cls:'art-3'}],tip:'همون موقع بخور.'},
+{id:65,name:'کیک ماگ',cat:'dessert',emoji:'☕',time:'۵ دق',cal:۲۲۰,protein:'۶گرم',
+ing:[{em:'🌾',n:'آرد',g:'۴ قاشق'},{em:'🍫',n:'کاکائو',g:'۲ قاشق'},{em:'🍯',n:'عسل',g:'۲ قاشق'},{em:'🥚',n:'تخم‌مرغ',g:'۱ عدد'},{em:'🥛',n:'شیر',g:'۳ قاشق'},{em:'🥄',n:'روغن',g:'۱ قاشق'}],
+steps:[{t:'همه مواد توی ماگ.',art:['☕','🌾','🍫','🥚'],cls:'art-6'},{t:'با قاشق مخلوط کن.',art:['🥄','🌀','☕'],cls:'art-6'},{t:'۲ دقیقه مایکروویو.',art:['☕','📻','🔥','⏱️'],cls:'art-1'},{t:'۱ دقیقه صبر کن.',art:['☕','❄️','⏱️'],cls:'art-5'},{t:'با شکلات تزئین کن.',art:['🍫','☕','✨'],cls:'art-6'}],tip:'بیشتر از ۲ دقیقه نذار.'},
+{id:66,name:'بستنی ماست',cat:'dessert',emoji:'🍦',time:'۳ ساعت',cal:۱۰۰,protein:'۶گرم',
+ing:[{em:'🥛',n:'ماست یونانی',g:'۳۰۰ گرم'},{em:'🍓',n:'توت',g:'۱۵۰ گرم'},{em:'🍯',n:'عسل',g:'۲ قاشق'}],
+steps:[{t:'توت خرد کن.',art:['🍓','🔪','➡️'],cls:'art-3'},{t:'با ماست مخلوط کن.',art:['🥛','🍓','🥣'],cls:'art-3'},{t:'عسل اضافه کن.',art:['🍯','🥄','🥣'],cls:'art-4'},{t:'توی قالب بریز.',art:['🥣','🍦','➡️'],cls:'art-5'},{t:'۳ ساعت فریزر.',art:['🍦','❄️','⏱️'],cls:'art-5'}],tip:'قالب یخ استفاده کن.'},
+{id:67,name:'براونی لوبیا',cat:'dessert',emoji:'🍫',time:'۳۰ دق',cal:۱۶۰,protein:'۷گرم',
+ing:[{em:'🫘',n:'لوبیا قرمز',g:'۲۰۰ گرم'},{em:'🍫',n:'کاکائو',g:'۳ قاشق'},{em:'🍯',n:'عسل',g:'۳ قاشق'},{em:'🥚',n:'تخم‌مرغ',g:'۱ عدد'},{em:'🥜',n:'کره بادام‌زمینی',g:'۲ قاشق'}],
+steps:[{t:'لوبیا رو له کن.',art:['🫘','🍴','🥣'],cls:'art-1'},{t:'کاکائو و عسل اضافه کن.',art:['🍫','🍯','🥣'],cls:'art-6'},{t:'تخم‌مرغ و کره اضافه کن.',art:['🥚','🥜','🥣'],cls:'art-4'},{t:'مخلوط کن.',art:['🥣','🥄','🌀'],cls:'art-6'},{t:'توی ماهیتابه دربسته بپز.',art:['🥣','🫕','🔥','⏱️'],cls:'art-1'}],tip:'لوبیا رو خوب له کن.'},
+{id:68,name:'کرم آووکادو',cat:'dessert',emoji:'🥑',time:'۱۰ دق',cal:۱۸۰,protein:'۴گرم',
+ing:[{em:'🥑',n:'آووکادو رسیده',g:'۱ عدد'},{em:'🍫',n:'کاکائو',g:'۲ قاشق'},{em:'🍯',n:'عسل',g:'۳ قاشق'},{em:'🥛',n:'شیر',g:'۳ قاشق'}],
+steps:[{t:'آووکادو له کن.',art:['🥑','🍴','🥣'],cls:'art-2'},{t:'کاکائو اضافه کن.',art:['🍫','🥣','🥄'],cls:'art-6'},{t:'عسل و شیر اضافه کن.',art:['🍯','🥛','🥣'],cls:'art-4'},{t:'مخلوط کن.',art:['🥣','🌀','✨'],cls:'art-6'},{t:'با توت تزئین کن.',art:['🍓','🥣','✨'],cls:'art-3'}],tip:'روی نان تست بمال.'},
+{id:69,name:'سیب پخته',cat:'dessert',emoji:'🍎',time:'۲۰ دق',cal:۱۳۰,protein:'۲گرم',
+ing:[{em:'🍎',n:'سیب',g:'۳ عدد'},{em:'🍯',n:'عسل',g:'۲ قاشق'},{em:'🌰',n:'دارچین',g:'۱ قاشق'},{em:'🌰',n:'گردو',g:'۳۰ گرم'}],
+steps:[{t:'سیب رو نصف کن.',art:['🍎','🔪','➡️'],cls:'art-3'},{t:'توی تابه بچین.',art:['🍎','🫕','➡️'],cls:'art-1'},{t:'عسل و دارچین بپاش.',art:['🍯','🌰','🍎'],cls:'art-4'},{t:'۱۵ دقیقه بپز.',art:['🫕','🔥','⏱️'],cls:'art-1'},{t:'با گردو تزئین کن.',art:['🌰','🍎','✨'],cls:'art-6'}],tip:'بوی خوشش همه جا رو پر می‌کنه!'},
+{id:70,name:'ماست و خیار',cat:'dessert',emoji:'🥛',time:'۱۰ دق',cal:۱۲۰,protein:'۶گرم',
+ing:[{em:'🥛',n:'ماست',g:'۵۰۰ گرم'},{em:'🥒',n:'خیار',g:'۲ عدد'},{em:'🌿',n:'نعنا خشک',g:'۱ قاشق'},{em:'🌰',n:'گردو',g:'۳۰ گرم'},{em:'🍯',n:'عسل',g:'۱ قاشق'}],
+steps:[{t:'خیار رنده کن.',art:['🥒','🪒','🥣'],cls:'art-2'},{t:'آبش رو بگیر.',art:['🥒','💧','➡️'],cls:'art-2'},{t:'با ماست مخلوط کن.',art:['🥛','🥒','🥣'],cls:'art-3'},{t:'نعنا و عسل اضافه کن.',art:['🌿','🍯','🥣'],cls:'art-2'},{t:'با گردو تزئین کن.',art:['🌰','🥣','❄️'],cls:'art-6'}],tip:'با نان تازه بخور.'},
+{id:71,name:'پودینگ موز',cat:'dessert',emoji:'🍮',time:'۲ ساعت',cal:۱۴۰,protein:'۴گرم',
+ing:[{em:'🌱',n:'تخم شربتی',g:'۳ قاشق'},{em:'🥛',n:'شیر',g:'۱ لیوان'},{em:'🍌',n:'موز',g:'۲ عدد'},{em:'🍯',n:'عسل',g:'۲ قاشق'}],
+steps:[{t:'تخم شربتی با شیر مخلوط کن.',art:['🌱','🥛','🥣'],cls:'art-5'},{t:'۱۵ دقیقه صبر کن.',art:['🥣','⏱️','✨'],cls:'art-5'},{t:'موز خرد کن.',art:['🍌','🔪','➡️'],cls:'art-4'},{t:'عسل و موز اضافه کن.',art:['🍯','🍌','🥣'],cls:'art-4'},{t:'۲ ساعت یخچال.',art:['🥣','❄️','⏱️'],cls:'art-5'}],tip:'قبل سرو هم بزن.'},
+{id:72,name:'انرژی‌بار جو',cat:'dessert',emoji:'🍫',time:'۲۰ دق',cal:۱۶۰,protein:'۵گرم',
+ing:[{em:'🌾',n:'جو دوسر',g:'۱۵۰ گرم'},{em:'🍯',n:'عسل',g:'۳ قاشق'},{em:'🥜',n:'کره بادام‌زمینی',g:'۳ قاشق'},{em:'🍫',n:'شکلات تلخ',g:'۳۰ گرم'}],
+steps:[{t:'جو دوسر توی کاسه.',art:['🌾','🥣','✨'],cls:'art-4'},{t:'عسل و کره اضافه کن.',art:['🍯','🥜','🥣'],cls:'art-1'},{t:'مخلوط کن.',art:['🥣','🥄','🌀'],cls:'art-4'},{t:'پهن کن.',art:['🥣','🪵','➡️'],cls:'art-4'},{t:'شکلات بپاش.',art:['🍫','✨','🪵'],cls:'art-6'},{t:'۲ ساعت یخچال، بعد برش بزن.',art:['❄️','🔪','🍫'],cls:'art-6'}],tip:'گردو هم اضافه کن.'},
+{id:73,name:'آبمیوه سبز',cat:'dessert',emoji:'🥤',time:'۵ دق',cal:۸۰,protein:'۲گرم',
+ing:[{em:'🥬',n:'اسفناج',g:'۵۰ گرم'},{em:'🍏',n:'سیب سبز',g:'۱ عدد'},{em:'🥒',n:'خیار',g:'۱ عدد'},{em:'🍋',n:'آبلیمو',g:'۱ قاشق'},{em:'🍯',n:'عسل',g:'۱ قاشق'}],
+steps:[{t:'همه رو بشور.',art:['🥬','🍏','🥒','💧'],cls:'art-2'},{t:'خرد کن.',art:['🔪','🥬','🍏','🥒'],cls:'art-2'},{t:'با آب و یخ میکس کن.',art:['🧊','💧','🥤'],cls:'art-5'},{t:'میکس کن.',art:['🥤','🌀','✨'],cls:'art-5'},{t:'عسل و آبلیمو اضافه کن.',art:['🍯','🍋','🥤','✨'],cls:'art-2'}],tip:'همون موقع بخور.'},
+{id:74,name:'کرم نارگیل انبه',cat:'dessert',emoji:'🥭',time:'۳ ساعت',cal:۱۹۰,protein:'۳گرم',
+ing:[{em:'🥥',n:'شیر نارگیل',g:'۲۰۰ میلی‌لیتر'},{em:'🥭',n:'انبه',g:'۲ عدد'},{em:'🍯',n:'عسل',g:'۲ قاشق'},{em:'🌱',n:'دانه چیا',g:'۲ قاشق'}],
+steps:[{t:'شیر نارگیل با چیا مخلوط کن.',art:['🥥','🌱','🥣'],cls:'art-4'},{t:'عسل اضافه کن.',art:['🍯','🥣','🥄'],cls:'art-4'},{t:'۱۵ دقیقه صبر کن.',art:['🥣','⏱️','🥄'],cls:'art-5'},{t:'انبه خرد کن.',art:['🥭','🔪','➡️'],cls:'art-4'},{t:'لایه‌لایه توی لیوان بریز.',art:['🥣','🥭','🥤','✨'],cls:'art-4'},{t:'۲ ساعت یخچال.',art:['🥤','❄️','⏱️'],cls:'art-5'}],tip:'با موز هم می‌شه.'},
+{id:75,name:'شیرینی خرما',cat:'dessert',emoji:'🌴',time:'۲۵ دق',cal:۱۴۰,protein:'۴گرم',
+ing:[{em:'🌴',n:'خرما',g:'۲۰۰ گرم'},{em:'🌾',n:'جو دوسر',g:'۱۰۰ گرم'},{em:'🥥',n:'نارگیل رنده',g:'۳۰ گرم'},{em:'🌰',n:'دارچین',g:'۱ قاشق'}],
+steps:[{t:'خرما رو هسته بگیر و خیس کن.',art:['🌴','💧','🥣'],cls:'art-6'},{t:'با چنگال له کن.',art:['🌴','🍴','🥣'],cls:'art-6'},{t:'جو دوسر و نارگیل اضافه کن.',art:['🌾','🥥','🥣'],cls:'art-4'},{t:'دارچین بزن.',art:['🌰','🥣','🌀'],cls:'art-6'},{t:'توپ دربیار.',art:['🤲','⚪','⚪'],cls:'art-4'},{t:'توی نارگیل بزن.',art:['⚪','🥥','✨'],cls:'art-4'}],tip:'دست رو خیس کن.'},
+{id:76,name:'دسر ماست هویج',cat:'dessert',emoji:'🥕',time:'۱۵ دق',cal:۱۵۰,protein:'۶گرم',
+ing:[{em:'🥛',n:'ماست یونانی',g:'۳۰۰ گرم'},{em:'🥕',n:'هویج',g:'۲ عدد'},{em:'🍯',n:'عسل',g:'۲ قاشق'},{em:'🌰',n:'دارچین',g:'۱ قاشق'},{em:'🌰',n:'گردو',g:'۳۰ گرم'}],
+steps:[{t:'هویج رنده ریز کن.',art:['🥕','🪒','🥣'],cls:'art-1'},{t:'با ماست مخلوط کن.',art:['🥛','🥕','🥣'],cls:'art-4'},{t:'عسل اضافه کن.',art:['🍯','🥣','🥄'],cls:'art-4'},{t:'دارچین بپاش.',art:['🌰','🥣','✨'],cls:'art-6'},{t:'با گردو تزئین کن.',art:['🌰','🥣','❄️'],cls:'art-6'}],tip:'هویج رنده ریز بهتره.'},
+{id:77,name:'کیک سیب بدون فر',cat:'dessert',emoji:'🍎',time:'۳۰ دق',cal:۲۱۰,protein:'۶گرم',
+ing:[{em:'🍎',n:'سیب',g:'۳ عدد'},{em:'🌾',n:'آرد',g:'۱۵۰ گرم'},{em:'🥚',n:'تخم‌مرغ',g:'۲ عدد'},{em:'🍯',n:'عسل',g:'۳ قاشق'},{em:'🫒',n:'روغن',g:'۵۰ گرم'},{em:'🌰',n:'دارچین',g:'۱ قاشق'}],
+steps:[{t:'سیب رنده کن.',art:['🍎','🪒','🥣'],cls:'art-3'},{t:'تخم‌مرغ و عسل بزن.',art:['🥚','🍯','🥣'],cls:'art-4'},{t:'روغن و دارچین اضافه کن.',art:['🫒','🌰','🥣'],cls:'art-4'},{t:'آرد و سیب اضافه کن.',art:['🌾','🍎','🥣'],cls:'art-3'},{t:'مخلوط کن.',art:['🥣','🥄','🌀'],cls:'art-3'},{t:'توی ماهیتابه دربسته بپز.',art:['🥣','🫕','🔥','⏱️'],cls:'art-1'}],tip:'درب کامل بسته باشه.'},
+{id:78,name:'موس توت‌فرنگی',cat:'dessert',emoji:'🍓',time:'۳ ساعت',cal:۱۲۰,protein:'۵گرم',
+ing:[{em:'🍓',n:'توت‌فرنگی',g:'۳۰۰ گرم'},{em:'🥛',n:'ماست یونانی',g:'۲۰۰ گرم'},{em:'🍯',n:'عسل',g:'۲ قاشق'},{em:'🌱',n:'ژلاتین',g:'۵ گرم'}],
+steps:[{t:'توت رو بشور و له کن.',art:['🍓','🍴','🥣'],cls:'art-3'},{t:'ژلاتین توی آب گرم حل کن.',art:['🌱','💧','🥣'],cls:'art-5'},{t:'با ماست مخلوط کن.',art:['🥛','🥣','🌀'],cls:'art-3'},{t:'عسل و توت اضافه کن.',art:['🍯','🍓','🥣'],cls:'art-3'},{t:'توی قالب بریز.',art:['🥣','🍮','➡️'],cls:'art-3'},{t:'۳ ساعت یخچال.',art:['🍮','❄️','⏱️'],cls:'art-5'}],tip:'با توت تازه تزئین کن.'},
+{id:79,name:'اسموتی انبه',cat:'dessert',emoji:'🥭',time:'۵ دق',cal:۱۳۰,protein:'۳گرم',
+ing:[{em:'🥭',n:'انبه',g:'۲ عدد'},{em:'🥛',n:'شیر',g:'۱ لیوان'},{em:'🍯',n:'عسل',g:'۱ قاشق'},{em:'🧊',n:'یخ',g:'۳ عدد'}],
+steps:[{t:'انبه پوست بگیر.',art:['🥭','🔪','➡️'],cls:'art-4'},{t:'همه توی مخلوط‌کن.',art:['🥭','🥛','🍯','🥤'],cls:'art-4'},{t:'یخ اضافه کن.',art:['🧊','🧊','🥤'],cls:'art-5'},{t:'۳۰ ثانیه میکس کن.',art:['🥤','🌀','⚡'],cls:'art-4'},{t:'توی لیوان بریز.',art:['🥤','✨','🥭'],cls:'art-4'}],tip:'موز هم اضافه کن.'}
+];
+
+// ==================== EXERCISES ====================
+const EXERCISES = [
+{id:1,name:'کاهش وزن ۳۰ روزه',emoji:'🔥',days:30,goal:'کاهش وزن',cal:'۲۰۰-۳۰۰',desc:'برنامه ترکیبی چربی‌سوزی با تمرینات هوازی و مقاومتی — بدون تجهیزات!',tags:['چربی‌سوزی','هوازی','بدون وسیله'],
+steps:[{t:'۵ دقیقه گرم کردن: پیاده‌روی سریع یا درجا زدن.',art:['🚶‍♀️','⏱️','🔥'],cls:'art-1'},{t:'۱۵ تا اسکات.',art:['🦵','⬇️','⬆️','×۱۵'],cls:'art-2'},{t:'۳۰ ثانیه پلانک.',art:['🧘','⏱️','💪'],cls:'art-3'},{t:'۲۰ تا جامپینگ جک.',art:['🤸','⬆️','⬇️','×۲۰'],cls:'art-4'},{t:'۱۵ تا لانگ.',art:['🦵','➡️','🔄','×۱۵'],cls:'art-5'},{t:'۵ دقیقه سرد کردن.',art:['🧘','💆','✨'],cls:'art-6'}],tip:'هر روز صبح ناشتا انجام بده.'},
+{id:2,name:'بدن ساعت شنی',emoji:'⏳',days:30,goal:'فرم‌دهی',cal:'۱۵۰-۲۰۰',desc:'تمرینات مخصوص فرم‌دهی به کمر، باسن و شکم برای بدن ایده‌آل.',tags:['فرم‌دهی','کمر','باسن'],
+steps:[{t:'۵ دقیقه گرم کردن.',art:['🤸','⏱️','💫'],cls:'art-4'},{t:'۲۰ تا هیپ تراست.',art:['🦵','⬆️','⬇️','×۲۰'],cls:'art-5'},{t:'۱۵ تا ساید لگ هر طرف.',art:['🦵','➡️','🔄','×۱۵'],cls:'art-2'},{t:'۳۰ ثانیه پلانک پهلو راست.',art:['🧘','⏱️','👉'],cls:'art-3'},{t:'۳۰ ثانیه پلانک پهلو چپ.',art:['🧘','⏱️','👈'],cls:'art-3'},{t:'۲۰ تا کرانچ.',art:['💪','🔄','⚡','×۲۰'],cls:'art-1'},{t:'کشش پایانی.',art:['🧘','✨','💆'],cls:'art-6'}],tip:'هر روز انجام بده.'},
+{id:3,name:'تسکین درد کمر و گردن',emoji:'🦴',days:30,goal:'رفع درد',cal:'۸۰-۱۲۰',desc:'حرکات کششی و تقویتی برای کاهش دردهای مزمن کمر، زانو و گردن.',tags:['کشش','درد','درمانی'],
+steps:[{t:'گردن رو به آرامی بچرخون (۱۰ بار).',art:['🙆','⬅️','➡️','×۱۰'],cls:'art-5'},{t:'شانه‌ها رو بالا ببر و بنداز (۱۵ بار).',art:['🙆','⬆️','⬇️','×۱۵'],cls:'art-1'},{t:'گربه-شتر (کمر قوس).',art:['🐈','🔄','🐫'],cls:'art-2'},{t:'زانو رو به سینه بگیر (۱۰ بار هر طرف).',art:['🦵','➡️','🫂','×۱۰'],cls:'art-3'},{t:'کشش کمر روی زمین (۳۰ ثانیه).',art:['🧘','⏱️','✨'],cls:'art-6'},{t:'۵ دقیقه استراحت.',art:['😌','💤','✨'],cls:'art-4'}],tip:'اگه درد شدید شد، متوقف کن.'},
+{id:4,name:'اصلاح قوز کمر',emoji:'🧍',days:30,goal:'پاسچر',cal:'۱۰۰-۱۵۰',desc:'تمرینات اصلاح پاسچر برای کسانی که ساعت‌ها پشت موبایل هستن.',tags:['پاسچر','قوز','اصلاحی'],
+steps:[{t:'دیوار بایست، پشت سر، شانه و باسن به دیوار (۱ دقیقه).',art:['🧍','🧱','⏱️'],cls:'art-1'},{t:'کتف‌ها رو به هم فشار بده (۲۰ بار).',art:['💪','🔄','×۲۰'],cls:'art-5'},{t:'حرکت Y-T-W با دست‌ها (۱۰ بار هر کدوم).',art:['🙆','🔤','×۱۰'],cls:'art-4'},{t:'پلانک روی دیوار (۳۰ ثانیه).',art:['🧱','🧘','⏱️'],cls:'art-2'},{t:'کشش سینه در چارچوب در (۳۰ ثانیه).',art:['🚪','🫂','⏱️'],cls:'art-6'},{t:'ماساژ گردن.',art:['💆','✨','😌'],cls:'art-3'}],tip:'هنگام نشستن، شونه‌ها رو عقب نگه دار.'},
+{id:5,name:'اصلاح گودی کمر',emoji:'🧘',days:30,goal:'پاسچر',cal:'۱۰۰-۱۵۰',desc:'تمرینات اصلاح گودی کمر و تقویت عضلات مرکزی بدن.',tags:['گودی کمر','مرکزی','اصلاحی'],
+steps:[{t:'به پشت دراز بکش، زانوها خم.',art:['🛏️','🧘','✨'],cls:'art-5'},{t:'پل باسن (۱۵ بار).',art:['🦵','⬆️','⬇️','×۱۵'],cls:'art-5'},{t:'زانو رو به سینه بگیر (۱۰ بار).',art:['🦵','🫂','×۱۰'],cls:'art-3'},{t:'پلانک (۲۰ ثانیه).',art:['🧘','⏱️','💪'],cls:'art-2'},{t:'کشش کمر با زانو (۳۰ ثانیه).',art:['🧘','⏱️','🌙'],cls:'art-6'},{t:'استراحت.',art:['😌','✨','💆'],cls:'art-4'}],tip:'از بالش زیر زانو استفاده کن.'},
+{id:6,name:'تسکین چرخش لگن',emoji:'🦵',days:30,goal:'رفع درد',cal:'۸۰-۱۲۰',desc:'حرکات مخصوص کاهش درد و اصلاح چرخش لگن.',tags:['لگن','مادرزادی','درمانی'],
+steps:[{t:'به پشت دراز بکش، زانوها خم.',art:['🛏️','🦵','🧘'],cls:'art-5'},{t:'زانوها رو به چپ و راست بچرخون (۱۵ بار).',art:['🦵','⬅️','➡️','×۱۵'],cls:'art-3'},{t:'پروانه (کف پاها به هم) - ۱ دقیقه.',art:['🦋','⏱️','✨'],cls:'art-4'},{t:'هر زانو رو جدا به سینه بگیر (۱۰ بار).',art:['🦵','🫂','×۱۰'],cls:'art-3'},{t:'کشش پروانه عمیق (۳۰ ثانیه).',art:['🦋','⏱️','💫'],cls:'art-6'},{t:'استراحت.',art:['😌','💤','✨'],cls:'art-2'}],tip:'اگه درد شدید داری، با پزشک مشورت کن.'}
+];
+
+// ==================== MASSAGES ====================
+const MASSAGES = [
+{id:1,name:'کوچک کردن بینی',emoji:'👃',time:'۵ دقیقه',desc:'تکنیک‌های فشار و کشش برای فرم‌دهی به بینی.',
+steps:[{t:'دست‌ها رو با آب گرم بشور.',art:['🧼','💧','🙌'],cls:'art-2'},{t:'از پایین بینی به بالا فشار بده (۱۰ بار).',art:['👃','⬆️','×۱۰','💪'],cls:'art-1'},{t:'دو طرف بینی رو با انگشت فشار بده (۱۰ بار).',art:['👃','👆','👆','×۱۰'],cls:'art-3'},{t:'نوک بینی رو ملایم بکش (۱۰ بار).',art:['👃','👉','🔄','×۱۰'],cls:'art-4'},{t:'با انگشت اشاره، دو طرف رو به داخل فشار بده (۱۵ بار).',art:['👃','👆','⬅️','➡️'],cls:'art-6'},{t:'آب سرد به صورت بزن.',art:['💧','🧊','✨'],cls:'art-5'}],tip:'هر روز صبح انجام بده.'},
+{id:2,name:'رفع پف زیر چشم',emoji:'👁️',time:'۳ دقیقه',desc:'حرکات ملایم برای کاهش پف و سیاهی دور چشم.',
+steps:[{t:'دست‌ها رو بشور و خنک کن.',art:['🧼','❄️','🙌'],cls:'art-5'},{t:'با انگشت حلقه، دور چشم ضربه بزن (۱۰ بار).',art:['👁️','👆','➡️','×۱۰'],cls:'art-2'},{t:'زیر چشم رو ماساژ بده (۱۰ بار).',art:['👁️','💆','🔄','×۱۰'],cls:'art-6'},{t:'از گوشه چشم به شقیقه بکش (۱۰ بار).',art:['👁️','👉','➡️','×۱۰'],cls:'art-3'},{t:'با کمپرس سرد ۱ دقیقه استراحت.',art:['🧊','👁️','⏱️'],cls:'art-5'}],tip:'از کرم دور چشم استفاده کن.'},
+{id:3,name:'لیفت صورت',emoji:'✨',time:'۱۰ دقیقه',desc:'تکنیک‌های کشش برای جوان‌سازی و لیفت پوست.',
+steps:[{t:'دست‌ها رو با کرم چرب کن.',art:['🧴','🙌','✨'],cls:'art-4'},{t:'از چانه به گوش‌ها بکش (۱۰ بار).',art:['😊','👉','➡️','×۱۰'],cls:'art-3'},{t:'از گوشه لب به شقیقه بکش (۱۰ بار).',art:['😊','👉','⬆️','×۱۰'],cls:'art-4'},{t:'از وسط ابرو به بالا بکش (۱۰ بار).',art:['🤨','👉','⬆️','×۱۰'],cls:'art-1'},{t:'از پیشانی به خط مو بکش (۱۰ بار).',art:['😌','👉','⬆️','×۱۰'],cls:'art-6'},{t:'با کف دست، کل صورت رو به بالا فشار بده (۵ بار).',art:['🙌','⬆️','✨','×۵'],cls:'art-2'}],tip:'همیشه رو به بالا ماساژ بده.'},
+{id:4,name:'رفع خط اخم',emoji:'😠',time:'۴ دقیقه',desc:'حرکات برای صاف کردن خطوط بین ابرو.',
+steps:[{t:'دو انگشت، بین ابروها رو فشار بده (۱۰ بار).',art:['😠','👆','👆','×۱۰'],cls:'art-6'},{t:'از وسط به خارج، خط اخم رو صاف کن (۱۰ بار).',art:['🤨','👉','➡️','×۱۰'],cls:'art-3'},{t:'دایره‌ای ماساژ بده (۱۰ بار).',art:['🤨','🔄','👆','×۱۰'],cls:'art-5'},{t:'پیشانی رو با کف دست صاف کن (۵ بار).',art:['🙌','😌','⬆️','×۵'],cls:'art-1'},{t:'با آب سرد بشور.',art:['💧','🧊','✨'],cls:'art-2'}],tip:'اخم نکن! این بهترین تمرینه.'},
+{id:5,name:'گونه و خط لبخند',emoji:'😊',time:'۵ دقیقه',desc:'کاهش خطوط دور دهان و فرم‌دهی گونه.',
+steps:[{t:'دو انگشت، گونه‌ها رو به بالا بکش (۱۰ بار).',art:['😊','👉','⬆️','×۱۰'],cls:'art-1'},{t:'از گوشه لب به بالا ماساژ بده (۱۰ بار).',art:['😊','👆','⬆️','×۱۰'],cls:'art-3'},{t:'با کف دست، گونه رو بالا فشار بده (۵ بار).',art:['🙌','😊','⬆️','×۵'],cls:'art-4'},{t:'خط لبخند رو با انگشت صاف کن (۱۰ بار).',art:['😊','👉','➡️','×۱۰'],cls:'art-6'},{t:'با آب سرد بشور.',art:['💧','🧊','✨'],cls:'art-5'}],tip:'لبخند بزن!'},
+{id:6,name:'ماساژ غبغب',emoji:'💪',time:'۶ دقیقه',desc:'تمرینات و ماساژ برای رفع غبغب.',
+steps:[{t:'سر رو به بالا بگیر.',art:['🙆','⬆️','👀'],cls:'art-4'},{t:'زیر چانه رو با پشت دست ماساژ بده (۱۵ بار).',art:['💪','👆','⬆️','×۱۵'],cls:'art-1'},{t:'فک رو به جلو و عقب ببر (۱۰ بار).',art:['😐','➡️','⬅️','×۱۰'],cls:'art-3'},{t:'زیر چانه رو با دو انگشت فشار بده (۱۰ بار).',art:['💪','👆','👆','×۱۰'],cls:'art-5'},{t:'سر رو به چپ و راست بچرخون (۱۰ بار).',art:['🙆','⬅️','➡️','×۱۰'],cls:'art-6'},{t:'با آب سرد بشور.',art:['💧','🧊','✨'],cls:'art-2'}],tip:'هر روز انجام بده.'},
+{id:7,name:'ماساژ پیشانی',emoji:'🧖',time:'۳ دقیقه',desc:'رفع تنش و خطوط پیشانی.',
+steps:[{t:'دست‌ها رو گرم کن.',art:['🙌','🔥','✨'],cls:'art-1'},{t:'از وسط پیشانی به شقیقه بکش (۱۰ بار).',art:['😌','👉','➡️','×۱۰'],cls:'art-6'},{t:'دایره‌ای ماساژ بده (۱۰ بار).',art:['😌','🔄','👆','×۱۰'],cls:'art-4'},{t:'با کف دست، پیشانی رو فشار بده (۵ بار).',art:['🙌','😌','💆','×۵'],cls:'art-5'},{t:'استراحت بده.',art:['😌','💤','✨'],cls:'art-2'}],tip:'قبل از خواب عالیه.'},
+{id:8,name:'گردن و فک',emoji:'💆',time:'۸ دقیقه',desc:'رفع گرفتگی و فرم‌دهی فک و گردن.',
+steps:[{t:'سر رو به چپ و راست بچرخون (۱۰ بار).',art:['🙆','⬅️','➡️','×۱۰'],cls:'art-4'},{t:'عضلات گردن رو ماساژ بده (۱۰ بار).',art:['💆','👆','👆','×۱۰'],cls:'art-1'},{t:'فک رو باز و بسته کن (۱۰ بار).',art:['😮','🔄','×۱۰'],cls:'art-3'},{t:'زیر فک رو به بالا فشار بده (۱۰ بار).',art:['💆','👆','⬆️','×۱۰'],cls:'art-5'},{t:'گردن رو به عقب و جلو ببر (۵ بار).',art:['🙆','⬆️','⬇️','×۵'],cls:'art-6'},{t:'آب گرم بنوش.',art:['💧','☕','✨'],cls:'art-2'}],tip:'با آب گرم دوش بگیر.'},
+{id:9,name:'رفع خستگی صورت',emoji:'😌',time:'۷ دقیقه',desc:'آرام‌سازی کامل عضلات صورت.',
+steps:[{t:'چشم‌ها رو ببند.',art:['😌','👁️','✨'],cls:'art-5'},{t:'شقیقه‌ها رو دایره‌ای ماساژ بده (۱۰ بار).',art:['💆','👆','🔄','×۱۰'],cls:'art-4'},{t:'زیر چشم‌ها رو با ضربه ماساژ بده (۱۰ بار).',art:['👁️','👆','✋','×۱۰'],cls:'art-2'},{t:'گونه‌ها رو با کف دست گرم کن (۵ بار).',art:['🙌','😊','🔥','×۵'],cls:'art-3'},{t:'پیشانی رو صاف کن (۵ بار).',art:['😌','🙌','⬆️','×۵'],cls:'art-6'},{t:'عمیق نفس بکش.',art:['🧘','💨','✨'],cls:'art-2'}],tip:'بعد از یه روز طولانی عالیه.'},
+{id:10,name:'تخلیه لنفاوی',emoji:'💧',time:'۱۰ دقیقه',desc:'کاهش احتباس آب و پف صورت.',
+steps:[{t:'دست‌ها رو بشور و خنک کن.',art:['🧼','❄️','🙌'],cls:'art-2'},{t:'از وسط صورت به گوش‌ها بکش (۱۰ بار).',art:['😊','👉','➡️','×۱۰'],cls:'art-3'},{t:'از گوش‌ها به گردن بکش (۱۰ بار).',art:['👂','👉','⬇️','×۱۰'],cls:'art-4'},{t:'از گردن به شانه بکش (۱۰ بار).',art:['💆','👉','⬇️','×۱۰'],cls:'art-5'},{t:'زیر فک رو به گوش بکش (۱۰ بار).',art:['💪','👉','⬆️','×۱۰'],cls:'art-6'},{t:'آب زیاد بنوش.',art:['💧','🥤','✨'],cls:'art-2'}],tip:'حرکات رو ملایم انجام بده.'},
+{id:11,name:'ماساژ گونه‌ها',emoji:'🌹',time:'۴ دقیقه',desc:'افزایش گردش خون و درخشندگی.',
+steps:[{t:'گونه‌ها رو با کف دست گرم کن (۱۰ بار).',art:['🙌','😊','🔥','×۱۰'],cls:'art-1'},{t:'دایره‌ای ماساژ بده (۱۰ بار).',art:['😊','👆','🔄','×۱۰'],cls:'art-3'},{t:'از پایین گونه به بالا بکش (۱۰ بار).',art:['😊','👉','⬆️','×۱۰'],cls:'art-4'},{t:'دو انگشت فشار ملایم بده (۱۰ بار).',art:['😊','👆','👆','×۱۰'],cls:'art-6'},{t:'آب سرد بزن.',art:['💧','🧊','✨'],cls:'art-5'}],tip:'با کرم انجام بده.'},
+{id:12,name:'ماساژ لب',emoji:'💋',time:'۳ دقیقه',desc:'حجم‌دهی و نرمی لب.',
+steps:[{t:'لب‌ها رو با کف دست گرم کن.',art:['🙌','💋','🔥'],cls:'art-3'},{t:'دایره‌ای ماساژ بده (۱۰ بار).',art:['💋','👆','🔄','×۱۰'],cls:'art-4'},{t:'از وسط لب به گوشه بکش (۱۰ بار).',art:['💋','👉','➡️','×۱۰'],cls:'art-6'},{t:'لب‌ها رو باز و بسته کن (۱۰ بار).',art:['💋','🔄','×۱۰'],cls:'art-1'},{t:'بالم بزن.',art:['💄','💋','✨'],cls:'art-2'}],tip:'با عسل هم می‌شه.'},
+{id:13,name:'گوش و شقیقه',emoji:'👂',time:'۵ دقیقه',desc:'رفع سردرد و آرامش.',
+steps:[{t:'شقیقه‌ها رو با دو انگشت فشار بده (۱۰ بار).',art:['💆','👆','👆','×۱۰'],cls:'art-5'},{t:'دایره‌ای ماساژ بده (۱۰ بار).',art:['💆','🔄','👆','×۱۰'],cls:'art-3'},{t:'لبه گوش‌ها رو ماساژ بده (۱۰ بار).',art:['👂','👆','🔄','×۱۰'],cls:'art-4'},{t:'نرمه گوش رو بکش (۱۰ بار).',art:['👂','👉','⬇️','×۱۰'],cls:'art-6'},{t:'چشم‌ها رو ببند و استراحت بده.',art:['😌','👁️','✨'],cls:'art-1'}],tip:'برای سردرد عالیه.'},
+{id:14,name:'ضد چین و چروک',emoji:'🌟',time:'۱۲ دقیقه',desc:'تکنیک‌های تخصصی جوان‌سازی.',
+steps:[{t:'صورت رو با آب گرم بشور.',art:['💧','🔥','😌'],cls:'art-1'},{t:'با کرم، تمام صورت رو ماساژ بده (۵ دقیقه).',art:['🧴','💆','⏱️'],cls:'art-3'},{t:'از پایین به بالا، تمام خطوط رو صاف کن.',art:['👉','⬆️','✨'],cls:'art-4'},{t:'دور چشم‌ها رو ماساژ بده (۱۰ بار).',art:['👁️','💍','🔄','×۱۰'],cls:'art-6'},{t:'لب‌ها و دور دهان رو ماساژ بده (۱۰ بار).',art:['💋','💆','🔄','×۱۰'],cls:'art-2'},{t:'آب سرد و مرطوب‌کننده.',art:['💧','🧴','✨'],cls:'art-5'}],tip:'هر شب قبل خواب.'},
+{id:15,name:'ماساژ با گوا شا',emoji:'🪨',time:'۱۰ دقیقه',desc:'استفاده از سنگ گوا شا برای لیفت.',
+steps:[{t:'روغن یا کرم بمال.',art:['🧴','😊','✨'],cls:'art-4'},{t:'از چانه به گوش بکش (۱۰ بار).',art:['🪨','😊','➡️','×۱۰'],cls:'art-4'},{t:'از گوشه لب به بالا بکش (۱۰ بار).',art:['🪨','😊','⬆️','×۱۰'],cls:'art-4'},{t:'از زیر چشم به شقیقه بکش (۱۰ بار).',art:['🪨','👁️','➡️','×۱۰'],cls:'art-5'},{t:'از پیشانی به مو بکش (۱۰ بار).',art:['🪨','😌','⬆️','×۱۰'],cls:'art-6'},{t:'گردن رو از بالا به پایین.',art:['🪨','💆','⬇️'],cls:'art-2'}],tip:'زاویه همیشه رو به بالا.'},
+{id:16,name:'ماساژ با رولر',emoji:'🎋',time:'۸ دقیقه',desc:'استفاده از رولر یشم.',
+steps:[{t:'رولر رو توی یخچال بذار (۱۰ دقیقه).',art:['🎋','❄️','⏱️'],cls:'art-5'},{t:'از وسط صورت به گوش بکش (۱۰ بار).',art:['🎋','😊','➡️','×۱۰'],cls:'art-2'},{t:'از زیر چشم به شقیقه (۱۰ بار).',art:['🎋','👁️','➡️','×۱۰'],cls:'art-4'},{t:'از پیشانی به مو (۱۰ بار).',art:['🎋','😌','⬆️','×۱۰'],cls:'art-6'},{t:'گردن رو از پایین به بالا (۱۰ بار).',art:['🎋','💆','⬆️','×۱۰'],cls:'art-1'}],tip:'رولر رو هر بار بشور.'},
+{id:17,name:'رفع جوش',emoji:'🔴',time:'۶ دقیقه',desc:'تکنیک‌های ملایم برای پوست جوش‌دار.',
+steps:[{t:'صورت رو با آب گرم و صابون ملایم بشور.',art:['💧','🧼','😌'],cls:'art-2'},{t:'دور جوش‌ها رو دایره‌ای ماساژ بده (۱۰ بار).',art:['🔴','👆','🔄','×۱۰'],cls:'art-3'},{t:'از مرکز به خارج فشار ملایم بده (۱۰ بار).',art:['👉','➡️','🔄','×۱۰'],cls:'art-5'},{t:'با آب سرد بشور.',art:['💧','🧊','✨'],cls:'art-4'},{t:'مرطوب‌کننده بمال.',art:['🧴','😊','✨'],cls:'art-2'}],tip:'جوش‌ها رو فشار نده.'},
+{id:18,name:'روشن‌کننده پوست',emoji:'☀️',time:'۹ دقیقه',desc:'افزایش شفافیت و درخشندگی پوست.',
+steps:[{t:'صورت رو با آب گرم بشور.',art:['💧','🔥','😌'],cls:'art-1'},{t:'با کرم روشن‌کننده، صورت رو ماساژ بده.',art:['🧴','💆','✨'],cls:'art-4'},{t:'از پایین به بالا دایره‌ای (۱۰ بار).',art:['👆','🔄','⬆️','×۱۰'],cls:'art-4'},{t:'دور چشم رو ماساژ بده (۱۰ بار).',art:['👁️','👆','🔄','×۱۰'],cls:'art-4'},{t:'آب سرد بزن.',art:['💧','🧊','✨'],cls:'art-5'},{t:'مرطوب‌کننده بمال.',art:['🧴','😊','✨'],cls:'art-3'}],tip:'هر شب قبل خواب.'},
+{id:19,name:'ضد استرس',emoji:'🧘',time:'۱۵ دقیقه',desc:'آرام‌سازی کامل ذهن و صورت.',
+steps:[{t:'یه جای آروم بشین.',art:['🧘','🕯️','✨'],cls:'art-5'},{t:'چشم‌ها رو ببند و ۵ نفس عمیق بکش.',art:['😌','💨','×۵'],cls:'art-5'},{t:'پیشانی رو از وسط به بیرون ماساژ بده (۱۰ بار).',art:['😌','👆','➡️','×۱۰'],cls:'art-4'},{t:'شقیقه‌ها رو دایره‌ای ماساژ بده (۱۰ بار).',art:['💆','👆','🔄','×۱۰'],cls:'art-3'},{t:'گونه‌ها رو از پایین به بالا ماساژ بده (۱۰ بار).',art:['😊','👆','⬆️','×۱۰'],cls:'art-2'},{t:'گردن و شانه‌ها رو ماساژ بده.',art:['💆','🙌','✨'],cls:'art-1'}],tip:'با موسیقی آروم.'},
+{id:20,name:'بین دو ابرو',emoji:'😤',time:'۳ دقیقه',desc:'رفع سردرد و تنش.',
+steps:[{t:'دو انگشت، بین ابروها رو فشار بده (۱۰ بار).',art:['😤','👆','👆','×۱۰'],cls:'art-5'},{t:'دایره‌ای ماساژ بده (۱۰ بار).',art:['😤','👆','🔄','×۱۰'],cls:'art-3'},{t:'از وسط ابرو به بالا بکش (۱۰ بار).',art:['🤨','👉','⬆️','×۱۰'],cls:'art-4'},{t:'با کف دست، پیشانی رو فشار بده (۵ بار).',art:['🙌','😌','💆','×۵'],cls:'art-6'},{t:'استراحت بده.',art:['😌','💤','✨'],cls:'art-2'}],tip:'برای سردرد عالیه.'},
+{id:21,name:'خطوط گردن',emoji:'🦢',time:'۶ دقیقه',desc:'کاهش خطوط گردن.',
+steps:[{t:'سر رو به بالا بگیر.',art:['🙆','⬆️','🦢'],cls:'art-1'},{t:'از پایین گردن به بالا ماساژ بده (۱۰ بار).',art:['💆','👆','⬆️','×۱۰'],cls:'art-1'},{t:'با کرم، خطوط گردن رو صاف کن.',art:['🧴','👆','➡️'],cls:'art-3'},{t:'فک رو به سینه ببر (۱۰ بار).',art:['😐','⬇️','🫂','×۱۰'],cls:'art-4'},{t:'سر رو به چپ و راست بچرخون (۱۰ بار).',art:['🙆','⬅️','➡️','×۱۰'],cls:'art-6'}],tip:'هر روز انجام بده.'},
+{id:22,name:'تقویت مژه و ابرو',emoji:'👁️‍🗨️',time:'۴ دقیقه',desc:'تحریک رشد مژه و ابرو.',
+steps:[{t:'دست‌ها رو بشور.',art:['🧼','💧','🙌'],cls:'art-2'},{t:'ابروها رو از وسط به بیرون ماساژ بده (۱۰ بار).',art:['🤨','👆','➡️','×۱۰'],cls:'art-4'},{t:'مژه‌ها رو از ریشه به نوک بکش (۱۰ بار).',art:['👁️','👆','➡️','×۱۰'],cls:'art-3'},{t:'با روغن کرچک ماساژ بده.',art:['🫒','👆','✨'],cls:'art-6'},{t:'آب سرد بزن.',art:['💧','🧊','✨'],cls:'art-5'}],tip:'قبل خواب.'},
+{id:23,name:'ماساژ با یخ',emoji:'🧊',time:'۵ دقیقه',desc:'سفت‌کننده و رفع پف.',
+steps:[{t:'یه قالب یخ رو توی پارچه بپیچ.',art:['🧊','🧻','🎁'],cls:'art-5'},{t:'روی صورت دایره‌ای بکش (۱۰ بار).',art:['🧊','😊','🔄','×۱۰'],cls:'art-5'},{t:'روی پیشانی بکش (۱۰ بار).',art:['🧊','😌','🔄','×۱۰'],cls:'art-4'},{t:'دور چشم‌ها رو ملایم بکش (۵ بار).',art:['🧊','👁️','👆','×۵'],cls:'art-2'},{t:'استراحت بده.',art:['😌','❄️','✨'],cls:'art-3'}],tip:'یخ رو مستقیم روی پوست نذار.'},
+{id:24,name:'روغن آرگان',emoji:'💧',time:'۱۰ دقیقه',desc:'آبرسانی عمیق.',
+steps:[{t:'روغن آرگان رو دست بریز.',art:['💧','🙌','✨'],cls:'art-3'},{t:'کف دست‌ها رو به هم بمال.',art:['🙌','🔄','🔥'],cls:'art-1'},{t:'روی صورت بمال و ماساژ بده.',art:['🙌','😊','💆'],cls:'art-3'},{t:'از پایین به بالا دایره‌ای (۱۰ بار).',art:['👆','🔄','⬆️','×۱۰'],cls:'art-4'},{t:'۱۵ دقیقه بذار جذب بشه.',art:['⏱️','✨','😌'],cls:'art-6'}],tip:'شب‌ها قبل خواب.'},
+{id:25,name:'پوست خشک',emoji:'🧴',time:'۸ دقیقه',desc:'تکنیک‌های مخصوص پوست خشک.',
+steps:[{t:'صورت رو با آب گرم بشور.',art:['💧','🔥','😌'],cls:'art-1'},{t:'کرم آبرسان بمال.',art:['🧴','😊','✨'],cls:'art-4'},{t:'دایره‌ای ماساژ بده (۱۰ بار).',art:['👆','🔄','💆','×۱۰'],cls:'art-4'},{t:'روی نقاط خشک ۲ بار کرم بمال.',art:['🧴','👆','✨','×۲'],cls:'art-6'},{t:'آب سرد و کرم.',art:['💧','🧴','✨'],cls:'art-5'}],tip:'بعد از شستن، بلافاصله کرم بمال.'},
+{id:26,name:'پوست چرب',emoji:'💦',time:'۷ دقیقه',desc:'کنترل چربی و پاکسازی.',
+steps:[{t:'صورت رو با صابون ملایم بشور.',art:['🧼','💧','😌'],cls:'art-2'},{t:'تونر بزن.',art:['💧','🧴','✨'],cls:'art-3'},{t:'دایره‌ای ملایم ماساژ بده (۱۰ بار).',art:['👆','🔄','💆','×۱۰'],cls:'art-3'},{t:'نقاط چرب رو بیشتر ماساژ بده (۱۰ بار).',art:['💦','👆','🔄','×۱۰'],cls:'art-4'},{t:'آب سرد و کرم سبک.',art:['💧','🧴','✨'],cls:'art-6'}],tip:'روزانه دو بار.'},
+{id:27,name:'ضد لک',emoji:'🎨',time:'۹ دقیقه',desc:'کاهش لک و یکدست‌سازی.',
+steps:[{t:'صورت رو با آب گرم بشور.',art:['💧','🔥','😌'],cls:'art-1'},{t:'کرم ضد لک بمال.',art:['🧴','😊','✨'],cls:'art-3'},{t:'روی لک‌ها دایره‌ای ماساژ بده (۱۰ بار).',art:['🎨','👆','🔄','×۱۰'],cls:'art-4'},{t:'از مرکز به خارج ملایم (۱۰ بار).',art:['👆','➡️','✨','×۱۰'],cls:'art-5'},{t:'آب سرد و ضد آفتاب.',art:['💧','☀️','✨'],cls:'art-6'}],tip:'از ضد آفتاب استفاده کن.'},
+{id:28,name:'قبل از خواب',emoji:'🌙',time:'۶ دقیقه',desc:'آرام‌سازی برای خواب بهتر.',
+steps:[{t:'چراغ‌ها رو کم کن.',art:['💡','⬇️','🌙'],cls:'art-5'},{t:'چشم‌ها رو ببند.',art:['😌','👁️','✨'],cls:'art-5'},{t:'پیشانی رو ماساژ بده (۱۰ بار).',art:['😌','💆','👆','×۱۰'],cls:'art-4'},{t:'دور چشم‌ها رو ملایم ماساژ بده (۱۰ بار).',art:['👁️','💆','👆','×۱۰'],cls:'art-5'},{t:'گونه‌ها و گردن رو ماساژ بده (۱۰ بار).',art:['😊','💆','🔄','×۱۰'],cls:'art-2'},{t:'عمیق نفس بکش و بخواب.',art:['🧘','💨','😴'],cls:'art-4'}],tip:'با موسیقی آروم.'},
+{id:29,name:'برای نوجوانان',emoji:'🌸',time:'۵ دقیقه',desc:'مراقبت ساده برای پوست جوان.',
+steps:[{t:'صورت رو با آب ولرم بشور.',art:['💧','😊','🧼'],cls:'art-2'},{t:'دو انگشت، کل صورت رو ماساژ بده (۱۰ بار).',art:['😊','👆','🔄','×۱۰'],cls:'art-3'},{t:'پیشانی رو از وسط به بیرون (۱۰ بار).',art:['😌','👆','➡️','×۱۰'],cls:'art-4'},{t:'گونه‌ها رو از پایین به بالا (۱۰ بار).',art:['😊','👆','⬆️','×۱۰'],cls:'art-1'},{t:'آب سرد بزن.',art:['💧','🧊','✨'],cls:'art-5'}],tip:'هر روز صبح و شب.'},
+{id:30,name:'ماساژ کامل ۱۰ مرحله‌ای',emoji:'⭐',time:'۲۰ دقیقه',desc:'روتین کامل حرفه‌ای.',
+steps:[{t:'صورت رو بشور و کرم بمال.',art:['💧','🧴','😌'],cls:'art-1'},{t:'پیشانی: از وسط به بیرون (۱۰ بار).',art:['😌','👆','➡️','×۱۰'],cls:'art-4'},{t:'ابروها: از وسط به بیرون (۱۰ بار).',art:['🤨','👆','➡️','×۱۰'],cls:'art-4'},{t:'دور چشم: از داخل به خارج (۱۰ بار).',art:['👁️','👆','➡️','×۱۰'],cls:'art-5'},{t:'گونه‌ها: از پایین به بالا (۱۰ بار).',art:['😊','👆','⬆️','×۱۰'],cls:'art-3'},{t:'دور دهان: دایره‌ای (۱۰ بار).',art:['😊','👆','🔄','×۱۰'],cls:'art-3'},{t:'چانه: از پایین به گوش (۱۰ بار).',art:['😊','👆','⬆️','×۱۰'],cls:'art-4'},{t:'گردن: از پایین به بالا (۱۰ بار).',art:['💆','👆','⬆️','×۱۰'],cls:'art-1'},{t:'شقیقه: دایره‌ای (۱۰ بار).',art:['💆','👆','🔄','×۱۰'],cls:'art-6'},{t:'آب سرد و استراحت.',art:['💧','🧊','😌'],cls:'art-5'}],tip:'هر روز انجام بده.'}
+];
+
+// ==================== STATE ====================
+let currentCat = 'all';
+const catLabels = {all:{label:'همه',em:'🍽️'},korean:{label:'کره‌ای',em:'🇰🇷'},irani:{label:'ایرانی',em:'🇮🇷'},ready:{label:'آماده',em:'⚡'},dessert:{label:'دسر',em:'🍰'}};
+
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('loader').classList.add('hide'), 1800);
+  renderCats();
+  renderRecipes();
+  renderExercises();
+  renderMassages();
+  renderWater();
+  if(localStorage.getItem('night_mode') === '1'){
+    document.body.classList.add('night');
+    document.getElementById('nightBtn').innerText = '☀️';
+  }
+});
+
+function renderCats(){
+  const cats = ['all','korean','irani','ready','dessert'];
+  document.getElementById('cats').innerHTML = cats.map(c => 
+    `<button class="cat ${c===currentCat?'active':''}" onclick="setCat('${c}')"><span class="cat-em">${catLabels[c].em}</span>${catLabels[c].label}</button>`
+  ).join('');
+}
+
+function setCat(c){ currentCat = c; renderCats(); filterRecipes(); }
+
+function filterRecipes(){
+  const q = document.getElementById('searchInput').value.trim();
+  let list = RECIPES;
+  if(currentCat !== 'all') list = list.filter(r => r.cat === currentCat);
+  if(q) list = list.filter(r => r.name.includes(q) || r.ing.some(i => i.n.includes(q)));
+  renderRecipes(list);
+}
+
+function renderRecipes(list = null){
+  if(!list){
+    list = RECIPES;
+    if(currentCat !== 'all') list = list.filter(r => r.cat === currentCat);
+  }
+  const grid = document.getElementById('recipeGrid');
+  if(list.length === 0){ grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-em">🔍</div><div class="empty-txt">چیزی پیدا نشد!</div></div>`; return; }
+  const catArtColors = {korean:'linear-gradient(135deg,#ffd6e0,#ffb8c9)',irani:'linear-gradient(135deg,#d4f1d4,#b8e6c1)',ready:'linear-gradient(135deg,#fff2b8,#ffe89d)',dessert:'linear-gradient(135deg,#e8d6ff,#d4b8ff)'};
+  grid.innerHTML = list.map((r, idx) => `
+    <div class="recipe" onclick="openRecipe(${r.id})" style="animation-delay:${idx*0.03}s">
+      <div class="recipe-art" style="background:${catArtColors[r.cat]}"><div class="recipe-emoji">${r.emoji}</div></div>
+      <div class="recipe-body">
+        <div class="recipe-name">${r.name}</div>
+        <div class="recipe-meta"><span>⏱️ ${r.time}</span><span>🔥 ${r.cal}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderExercises(){
+  const colors = ['c1','c2','c3','c4','c5','c6'];
+  document.getElementById('exGrid').innerHTML = EXERCISES.map((e, i) => `
+    <div class="ex-card" onclick="openExercise(${e.id})">
+      <div class="ex-head">
+        <div class="ex-icon ${colors[i % 6]}">${e.emoji}</div>
+        <div class="ex-title"><h4>${e.name}</h4><span>📅 ${toFa(e.days)} روز • 🎯 ${e.goal} • 🔥 ${e.cal} کالری</span></div>
+      </div>
+      <div class="ex-desc">${e.desc}</div>
+      <div class="ex-tags">${e.tags.map(t => `<span class="ex-tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function renderMassages(){
+  const colors = ['mc-1','mc-2','mc-3','mc-4','mc-5','mc-6'];
+  document.getElementById('massageGrid').innerHTML = MASSAGES.map((m, i) => `
+    <div class="massage-card" onclick="openMassage(${m.id})">
+      <div class="massage-icon-wrap ${colors[i % 6]}"><span>${m.emoji}</span></div>
+      <h4>${m.name}</h4>
+      <div class="m-time">⏱️ ${m.time}</div>
+    </div>`).join('');
+}
+
+function openRecipe(id){
+  const r = RECIPES.find(x => x.id === id);
+  if(!r) return;
+  const catArtColors = {korean:'linear-gradient(135deg,#ffd6e0,#ffb8c9)',irani:'linear-gradient(135deg,#d4f1d4,#b8e6c1)',ready:'linear-gradient(135deg,#fff2b8,#ffe89d)',dessert:'linear-gradient(135deg,#e8d6ff,#d4b8ff)'};
+  document.getElementById('modalInner').innerHTML = `
+    <div class="modal-hero" style="background:${catArtColors[r.cat]}"><button class="close-btn" onclick="closeModal()">✕</button><div class="big-emoji">${r.emoji}</div></div>
+    <div class="modal-content">
+      <div class="recipe-title">${r.name}</div>
+      <div class="recipe-stats"><div class="stat-chip">⏱️ <b>${r.time}</b></div><div class="stat-chip">🔥 <b>${r.cal}</b> کالری</div><div class="stat-chip">💪 <b>${r.protein}</b></div><div class="stat-chip">${catLabels[r.cat].em} <b>${catLabels[r.cat].label}</b></div></div>
+      <div class="section-title">🧺 مواد لازم</div>
+      <div class="ing-list">${r.ing.map(i => `<div class="ing"><div class="ing-left"><span class="ing-em">${i.em}</span><span>${i.n}</span></div><span class="ing-amount">${i.g}</span></div>`).join('')}</div>
+      <div class="section-title">👨‍🍳 مراحل پخت</div>
+      <div class="steps-list">${r.steps.map((s, idx) => `<div class="step"><div class="step-num">${toFa(idx+1)}</div><div class="step-body"><div class="step-text">${s.t}</div><div class="step-art ${s.cls}">${s.art.map(a => (a === '➡️' || a === '⬇️' || a === '🔄' || a === '🌀') ? `<span class="arrow">${a}</span>` : `<span>${a}</span>`).join('')}</div></div></div>`).join('')}</div>
+      ${r.tip ? `<div class="tips-box"><div class="tips-title">💡 نکته طلایی</div><div class="tips-text">${r.tip}</div></div>` : ''}
+    </div>`;
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function openExercise(id){
+  const e = EXERCISES.find(x => x.id === id);
+  if(!e) return;
+  document.getElementById('modalInner').innerHTML = `
+    <div class="modal-hero" style="background:linear-gradient(135deg,#ffd6e0,#ffe89d)"><button class="close-btn" onclick="closeModal()">✕</button><div class="big-emoji">${e.emoji}</div></div>
+    <div class="modal-content">
+      <div class="recipe-title">${e.name}</div>
+      <div class="recipe-stats"><div class="stat-chip">📅 <b>${toFa(e.days)} روز</b></div><div class="stat-chip">🎯 <b>${e.goal}</b></div><div class="stat-chip">🔥 <b>${e.cal}</b> کالری</div></div>
+      <div class="section-title">📝 توضیحات</div>
+      <div class="ex-desc" style="padding:14px;background:var(--card);border-radius:16px;box-shadow:var(--shadow)">${e.desc}</div>
+      <div class="section-title">🎯 حرکات روزانه</div>
+      <div class="steps-list">${e.steps.map((s, i) => `<div class="step"><div class="step-num">${toFa(i+1)}</div><div class="step-body"><div class="step-text">${s.t}</div><div class="step-art ${s.cls}">${s.art.map(a => `<span>${a}</span>`).join('')}</div></div></div>`).join('')}</div>
+      <div class="section-title">📅 چالش ۳۰ روزه</div>
+      <div class="day-grid">${Array.from({length: 30}, (_, i) => `<div class="day-cell ${isDayDone(e.id, i+1) ? 'done' : ''}" onclick="toggleDay(${e.id}, ${i+1})"><div class="day-num">${toFa(i+1)}</div><div class="day-lbl">${isDayDone(e.id, i+1) ? '✓' : 'روز'}</div></div>`).join('')}</div>
+      ${e.tip ? `<div class="tips-box"><div class="tips-title">💡 نکته طلایی</div><div class="tips-text">${e.tip}</div></div>` : ''}
+    </div>`;
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function openMassage(id){
+  const m = MASSAGES.find(x => x.id === id);
+  if(!m) return;
+  document.getElementById('modalInner').innerHTML = `
+    <div class="modal-hero" style="background:linear-gradient(135deg,#e8d6ff,#ffd6e0)"><button class="close-btn" onclick="closeModal()">✕</button><div class="big-emoji">${m.emoji}</div></div>
+    <div class="modal-content">
+      <div class="recipe-title">${m.name}</div>
+      <div class="recipe-stats"><div class="stat-chip">⏱️ <b>${m.time}</b></div><div class="stat-chip">💆 <b>ماساژ صورت</b></div></div>
+      <div class="section-title">📝 توضیحات</div>
+      <div class="ex-desc" style="padding:14px;background:var(--card);border-radius:16px;box-shadow:var(--shadow)">${m.desc}</div>
+      <div class="section-title">✨ مراحل ماساژ</div>
+      <div class="steps-list">${m.steps.map((s, i) => `<div class="step"><div class="step-num">${toFa(i+1)}</div><div class="step-body"><div class="step-text">${s.t}</div><div class="step-art ${s.cls}">${s.art.map(a => `<span>${a}</span>`).join('')}</div></div></div>`).join('')}</div>
+      ${m.tip ? `<div class="tips-box"><div class="tips-title">💡 نکته طلایی</div><div class="tips-text">${m.tip}</div></div>` : ''}
+    </div>`;
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.getElementById('modal').addEventListener('click', e => { if(e.target.id === 'modal') closeModal(); });
+
+function openPage(page, btn){
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  if(page === 'home'){ currentCat = 'all'; renderCats(); filterRecipes(); }
+}
+
+// ==================== AI ====================
+async function askAI(){
+  const API_KEY = "اینجا کلید sk- خودت از avalai.ir بذار";
+  const input = document.getElementById('aiInput');
+  const resultBox = document.getElementById('aiResult');
+  const loadingBox = document.getElementById('aiLoading');
+  const btn = document.getElementById('aiBtn');
+  const userMessage = input.value.trim();
+  if(!userMessage){ showToast('اول سوالت رو بنویس!'); return; }
+  loadingBox.style.display = 'block';
+  resultBox.innerHTML = '';
+  btn.disabled = true;
+  try {
+    const response = await fetch('https://api.avalai.ir/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: "تو یه دستیار هوشمند سلامت، تغذیه، ورزش و ماساژ هستی. به زبان فارسی، صمیمی، کوتاه و کاربردی جواب بده. اگه سوال درباره دستور پخت بود، مواد و مراحل رو بنویس." },
+          { role: "user", content: userMessage }
+        ]
+      })
+    });
+    const data = await response.json();
+    if(data.choices && data.choices[0]){
+      const reply = data.choices[0].message.content;
+      resultBox.innerHTML = `<div class="ai-result-card"><div class="ai-result-title">🤖 دستیار:</div><div class="ai-result-text">${reply}</div></div>`;
+    } else {
+      resultBox.innerHTML = '<div style="color:red;padding:15px;text-align:center">خطا در دریافت پاسخ</div>';
+    }
+  } catch(err){
+    console.error(err);
+    resultBox.innerHTML = '<div style="color:red;padding:15px;text-align:center">ارتباط برقرار نشد. اینترنتت رو چک کن.</div>';
+  } finally {
+    loadingBox.style.display = 'none';
+    btn.disabled = false;
+  }
+}
+
+// ==================== DAY TRACKING ====================
+function isDayDone(exId, day){ return localStorage.getItem('ex_' + exId + '_' + day) === '1'; }
+function toggleDay(exId, day){
+  const key = 'ex_' + exId + '_' + day;
+  if(isDayDone(exId, day)){ localStorage.removeItem(key); showToast('روز ' + toFa(day) + ' لغو شد'); }
+  else { localStorage.setItem(key, '1'); showToast('✅ روز ' + toFa(day) + ' انجام شد!'); }
+  openExercise(exId);
+}
+
+// ==================== BMI ====================
+function calcBMI(){
+  const w = parseFloat(document.getElementById('bmiWeight').value);
+  const h = parseFloat(document.getElementById('bmiHeight').value) / 100;
+  if(!w || !h){ showToast('وزن و قد رو وارد کن!'); return; }
+  const bmi = (w / (h * h)).toFixed(1);
+  let label, cls, rec;
+  if(bmi < 18.5){ label='کمبود وزن'; cls='warn'; rec='دستورهای پرکالری از دسته رستورانی و کیک رژیمی رو بخور.'; }
+  else if(bmi < 25){ label='وزن نرمال ✓'; cls='good'; rec='عالیه! برای حفظ تناسب، روتین «بدن ساعت شنی» رو ادامه بده.'; }
+  else if(bmi < 30){ label='اضافه وزن'; cls='warn'; rec='روتین «کاهش وزن ۳۰ روزه» + رژیم کم‌کالری.'; }
+  else { label='چاقی'; cls='bad'; rec='قبل از هر روتین با پزشک مشورت کن.'; }
+  document.getElementById('bmiResult').innerHTML = `<div class="bmi-result ${cls}"><div class="bmi-value">${parseFloat(bmi).toLocaleString('fa-IR')}</div><div class="bmi-label">${label}</div><div class="bmi-rec">${rec}</div></div>`;
+}
+
+// ==================== WATER ====================
+function renderWater(){
+  const cups = document.getElementById('waterCups');
+  if(!cups) return;
+  const count = parseInt(localStorage.getItem('water_count') || '0');
+  cups.innerHTML = Array.from({length: 8}, (_, i) => `<div class="cup ${i < count ? 'filled' : ''}" onclick="setWater(${i+1})"></div>`).join('');
+  document.getElementById('waterCount').innerText = toFa(count) + ' از ۸';
+}
+function setWater(n){
+  localStorage.setItem('water_count', n);
+  renderWater();
+  if(n === 8) showToast('🎉 آفرین! ۸ لیوان آب خوردی!');
+}
+
+// ==================== UTIL ====================
+function toFa(n){
+  const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(n).split('').map(d => fa[+d] !== undefined ? fa[+d] : d).join('');
+}
+function toggleNight(){
+  document.body.classList.toggle('night');
+  const btn = document.getElementById('nightBtn');
+  btn.innerText = document.body.classList.contains('night') ? '☀️' : '🌙';
+  localStorage.setItem('night_mode', document.body.classList.contains('night') ? '1' : '0');
+}
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.classList.add('active');
+  setTimeout(() => t.classList.remove('active'), 2500);
+}
+</script>
+</body>
+</html>
